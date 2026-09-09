@@ -1,3 +1,8 @@
 .DS_Store
 *.tmp
 data/db.json.tmp
+
+# служебное — на GitHub не публикуем
+Инструкция — как всё устроено.md
+bump-version.py
+*.command

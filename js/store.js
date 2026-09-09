@@ -252,6 +252,8 @@ function renderCatalog(slug, q){
   const brands = [...new Set(scope.map(p => p.brand).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ru'));
   const title = query ? `Поиск: «${esc(query)}»` : (slug ? catTitle(slug) : (badge==='sale' ? 'Скидки и акции' : 'Весь каталог'));
 
+  const active = [brand, onlyIn ? '1' : '', badge, min ? '1' : '', isFinite(max) ? '1' : ''].filter(Boolean).length;
+
   const link = extra => {
     const p = new URLSearchParams(q.toString());
     Object.entries(extra).forEach(([k,v]) => v === null || v === '' ? p.delete(k) : p.set(k,v));
@@ -264,6 +266,7 @@ function renderCatalog(slug, q){
     <div class="crumbs"><a href="#/">Главная</a> / <a href="#/catalog">Каталог</a>${slug ? ' / <span>'+esc(catTitle(slug))+'</span>' : ''}</div>
     <h1 class="page-title">${title}</h1>
     <div class="page-sub">${list.length} ${plural(list.length,'товар','товара','товаров')} · цены действительны при заказе через сайт</div>
+    <button class="btn sm ghost filter-toggle" id="f-toggle">Фильтры${active ? `<span class="n">${active}</span>` : ''}</button>
 
     <div class="catalog">
       <aside class="filters">
@@ -313,6 +316,13 @@ function renderCatalog(slug, q){
       </section>
     </div>
   </div>`;
+
+  const toggle = $('#f-toggle');
+  toggle.onclick = () => {
+    const open = $('.filters').classList.toggle('is-open');
+    toggle.innerHTML = (open ? 'Скрыть фильтры' : 'Фильтры') + (active ? `<span class="n">${active}</span>` : '');
+  };
+  if (active) $('.filters').classList.add('is-open');
 
   $('#f-sort').onchange  = e => location.hash = link({ sort: e.target.value });
   $('#f-stock').onchange = e => location.hash = link({ stock: e.target.checked ? '1' : null });
@@ -408,7 +418,7 @@ function renderContacts(){
   <div class="wrap">
     <div class="crumbs"><a href="#/">Главная</a> / <span>Контакты</span></div>
     <h1 class="page-title">Контакты</h1>
-    <div class="catalog" style="grid-template-columns:1fr 1fr">
+    <div class="two-col">
       <div style="padding-top:20px">
         <div class="p-info" style="border:0;padding:0">
           <div><b>Адрес</b><span>${esc(s.city||'')}, ${esc(s.address||'')}</span></div>
@@ -417,8 +427,10 @@ function renderContacts(){
           <div><b>Режим работы</b><span>${esc(s.hours||'')}</span></div>
           <div><b>Чем занимаемся</b><span>${esc(s.tagline||'')}. Оснащаем салоны и обучаем мастеров.</span></div>
         </div>
-        <a class="btn wa" id="c-wa2" target="_blank" rel="noopener" style="margin-top:26px">Написать в WhatsApp</a>
-        <a class="btn ghost" href="${esc(s.mapLink||'#')}" target="_blank" rel="noopener" style="margin-top:26px;margin-left:8px">Открыть на карте</a>
+        <div class="contact-actions">
+          <a class="btn wa" id="c-wa2" target="_blank" rel="noopener">Написать в WhatsApp</a>
+          <a class="btn ghost" href="${esc(s.mapLink||'#')}" target="_blank" rel="noopener">Открыть на карте</a>
+        </div>
       </div>
       <div style="background:var(--surface);border-radius:4px;padding:34px">
         <h3 style="font-size:20px;margin-bottom:14px">Оснащаем салоны под ключ</h3>
@@ -651,7 +663,7 @@ const openDrawer  = () => { $('#drawer').classList.add('open'); $('#drawer-back'
 const closeDrawer = () => { $('#drawer').classList.remove('open'); $('#drawer-back').classList.remove('open'); };
 const openModal   = () => $('#modal-back').classList.add('open');
 const closeModal  = () => $('#modal-back').classList.remove('open');
-const closeMega   = () => $('#megamenu').classList.remove('open');
+const closeMega   = () => { $('#megamenu').classList.remove('open'); document.body.classList.remove('scroll-lock'); };
 
 function toast(text){
   const t = $('#toast');
@@ -667,7 +679,12 @@ document.addEventListener('click', e => {
   if (e.target.closest('.megamenu-item')) closeMega();
 });
 
-$('#burger').onclick = () => $('#megamenu').classList.toggle('open');
+$('#burger').onclick = () => {
+  const menu = $('#megamenu');
+  menu.style.top = Math.round($('.header').getBoundingClientRect().bottom) + 'px';
+  menu.classList.toggle('open');
+  document.body.classList.toggle('scroll-lock', menu.classList.contains('open'));
+};
 $('#megamenu').onclick = e => { if (e.target.id === 'megamenu') closeMega(); };
 $('#open-cart').onclick = openDrawer;
 $('#close-cart').onclick = closeDrawer;

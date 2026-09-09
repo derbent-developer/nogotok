@@ -157,6 +157,7 @@ textarea.inp{height:auto;min-height:96px;padding:11px 13px;resize:vertical;line-
   .order-head{flex-direction:column}
   .order-head .tools{flex-direction:column}
   .btn,.inp{height:46px}
+  .inp,input,select,textarea{font-size:16px}
   .btn.sm{height:38px}
   .table thead{display:none}
   .table td{display:block;border:none;padding:6px 14px}

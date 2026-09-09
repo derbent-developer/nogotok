@@ -190,6 +190,9 @@ $('#login-form').onsubmit = async e => {
   }
 };
 
+$('#logout').onclick = e => { e.preventDefault(); logout(); };
+$$('#nav button').forEach(b => b.onclick = () => { A.tab = b.dataset.tab; render(); });
+
 $('#help-link').onclick = e => {
   e.preventDefault();
   alert(

@@ -131,10 +131,26 @@ function cardHTML(p){
       <span class="price ${discount ? 'red' : ''}">${money(p.price)}</span>
       ${p.oldPrice > p.price ? `<span class="price-old">${money(p.oldPrice)}</span>` : ''}
     </div>
-    <button class="card-buy ${inCart ? 'added' : ''}" data-add="${p.id}">
-      ${inCart ? 'В корзине · ' + inCart.qty + ' шт' : 'В корзину'}
-    </button>
+    <div class="card-ctl" data-ctl="${p.id}">${cartControl(p)}</div>
   </article>`;
+}
+
+/** Кнопка «В корзину» либо качелька с количеством, если товар уже в корзине. */
+function cartControl(p){
+  const line = S.cart.find(i => i.id === p.id);
+  if (!line) return `<button class="card-buy" data-add="${p.id}">В корзину</button>`;
+  return `<div class="card-qty">
+      <button data-minus="${p.id}" aria-label="Убрать одну штуку">−</button>
+      <span>${line.qty} ${esc(p.unit || 'шт')}</span>
+      <button data-plus="${p.id}" aria-label="Добавить одну штуку">+</button>
+    </div>`;
+}
+
+function refreshControls(){
+  $$('[data-ctl]').forEach(el => {
+    const p = S.products.find(x => x.id === +el.dataset.ctl);
+    if (p) el.innerHTML = cartControl(p);
+  });
 }
 
 function uspHTML(){
@@ -529,11 +545,7 @@ function updateCart(){
   const co = $('#to-checkout'); if (co) co.onclick = openCheckout;
   const gc = $('#go-catalog');  if (gc) gc.onclick = () => { closeDrawer(); location.hash = '#/catalog'; };
 
-  $$('[data-add]').forEach(b => {
-    const line = S.cart.find(i => i.id === +b.dataset.add);
-    b.classList.toggle('added', !!line);
-    b.textContent = line ? 'В корзине · ' + line.qty + ' шт' : 'В корзину';
-  });
+  refreshControls();
 }
 
 /* ----------------------------------------------------------- оформление */
@@ -673,9 +685,26 @@ function toast(text){
   window.__toast = setTimeout(() => t.classList.remove('show'), 2600);
 }
 
+const cartQty = id => (S.cart.find(i => i.id === id) || {}).qty || 0;
+
 document.addEventListener('click', e => {
   const add = e.target.closest('[data-add]');
   if (add){ e.preventDefault(); addToCart(+add.dataset.add); }
+
+  const plus = e.target.closest('[data-plus]');
+  if (plus){
+    e.preventDefault();
+    const id = +plus.dataset.plus;
+    setQty(id, Math.min(999, cartQty(id) + 1));
+  }
+
+  const minus = e.target.closest('[data-minus]');
+  if (minus){
+    e.preventDefault();
+    const id = +minus.dataset.minus;
+    setQty(id, cartQty(id) - 1);
+  }
+
   if (e.target.closest('.megamenu-item')) closeMega();
 });
 

@@ -159,6 +159,20 @@ h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-.02em}
 }
 .card-buy:hover{background:var(--accent)}
 .card-buy.added{background:var(--ok)}
+.card-ctl{margin-top:12px}
+.card-ctl .card-buy{margin-top:0}
+.card-qty{
+  height:40px;display:flex;align-items:center;justify-content:space-between;
+  border:1px solid var(--ink);border-radius:var(--radius);background:#fff;overflow:hidden;
+}
+.card-qty button{
+  width:42px;height:100%;font-size:18px;line-height:1;font-weight:500;color:var(--ink);
+  display:grid;place-items:center;transition:.14s;
+}
+.card-qty button:hover{background:var(--surface)}
+.card-qty span{
+  font-size:13px;font-weight:600;flex:1;text-align:center;white-space:nowrap;
+}
 .card-buy[disabled]{background:var(--surface-2);color:var(--muted);cursor:not-allowed}
 
 /* ------------------------------------------------------------------ каталог */
@@ -419,6 +433,13 @@ h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-.02em}
   .modal h3{font-size:20px}
 
   .contact-actions .btn{width:100%}
+
+  /* поля ввода 16px, иначе телефон приближает страницу при нажатии на поле */
+  input,select,textarea,.search input,.field input,.field textarea,.field select,
+  .toolbar select,.price-row input{font-size:16px}
+  .search input{height:46px}
+  .card-qty{height:44px}
+  .card-qty button{width:44px}
 
   /* низ страницы */
   .usp{padding:34px 0 0;gap:8px}

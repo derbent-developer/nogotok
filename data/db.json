@@ -954,26 +954,6 @@
           "v": "сертификат"
         }
       ]
-    },
-    {
-      "id": 33,
-      "createdAt": "2026-09-09T20:38:23",
-      "title": "рычал-су",
-      "slug": "rychal-su-33",
-      "brand": "",
-      "category": "parikmaheram",
-      "sku": "",
-      "price": 100,
-      "oldPrice": 110,
-      "unit": "шт",
-      "badge": "",
-      "inStock": true,
-      "published": true,
-      "description": "",
-      "images": [
-        "assets/uploads/20260909-h96ejq.jpg"
-      ],
-      "specs": []
     }
   ]
 }

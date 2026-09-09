@@ -165,8 +165,8 @@ $('#login-form').onsubmit = async e => {
   try{
     A.user = await gh('/user');
     const repo = await gh(`/repos/${CFG.owner}/${CFG.repo}`);
-    if (!repo.permissions || !repo.permissions.push)
-      throw new Error(`У ключа нет прав на запись в ${CFG.owner}/${CFG.repo}. Выдайте доступ Contents: Read and write.`);
+    if (repo.permissions && repo.permissions.push === false)
+      console.warn('Ключ выглядит как «только чтение» — сохранение может не пройти');
     try{
       const store = $('#remember').checked ? localStorage : sessionStorage;
       store.setItem(TOKEN_KEY, token);

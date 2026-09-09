@@ -731,9 +731,17 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet()
     if (info.signedIn) return start();
     loginMode(info.ready ? 'password' : 'setup');
   }catch(ex){
-    loginMode('setup');
-    showLoginError(ex.status === 503
-      ? 'На сервере не задан секрет GITHUB_TOKEN. Добавьте его в настройках Cloudflare.'
-      : 'Панель не смогла связаться с сервером: ' + ex.message);
+    if (ex.status === 503){
+      $('#pin-block').classList.add('hidden');
+      $('#key-block').classList.add('hidden');
+      showLoginError(
+        'Панель ещё не настроена. В Cloudflare, в проекте nogotok, раздел Settings → ' +
+        'Variables and Secrets (это раздел для работы сайта, не Build variables), ' +
+        'добавьте секрет с именем GITHUB_TOKEN и опубликуйте новую версию кнопкой Deploy. ' +
+        'Витрина магазина при этом работает как обычно.');
+    }else{
+      loginMode('setup');
+      showLoginError('Панель не смогла связаться с сервером: ' + ex.message);
+    }
   }
 })();

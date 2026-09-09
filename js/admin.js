@@ -6,7 +6,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money = n => new Intl.NumberFormat('ru-RU').format(Math.round(n || 0)) + ' ₽';
 const TOKEN_KEY = 'nogotok_gh_token';
-const SITE_URL = `https://${CFG.owner}.github.io/${CFG.repo}/`;
+const SITE_URL = CFG.siteUrl || `https://${CFG.owner}.github.io/${CFG.repo}/`;
 
 const A = { token: '', user: null, db: null, sha: '', tab: 'products', filter: { q:'', cat:'' }, busy: false };
 

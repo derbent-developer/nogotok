@@ -5,4 +5,5 @@ window.SHOP_CONFIG = {
   branch: 'main',                // ветка, из которой публикуется сайт
   dbPath: 'data/db.json',        // файл каталога
   uploadDir: 'assets/uploads',   // папка для фотографий товаров
+  siteUrl: 'https://nogotok.derbent-dev.workers.dev/',  // адрес магазина для покупателей
 };

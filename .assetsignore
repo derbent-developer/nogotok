@@ -1,0 +1,5 @@
+worker/
+wrangler.jsonc
+.assetsignore
+.gitignore
+data/auth.json

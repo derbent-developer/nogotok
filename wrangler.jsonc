@@ -1,9 +1,11 @@
 {
-  // Конфигурация для Cloudflare: сайт состоит только из статических файлов,
-  // лежащих в корне репозитория. Имя должно совпадать с проектом в Cloudflare.
+  // Настройки Cloudflare. Сайт состоит из статических файлов в корне
+  // репозитория, worker/index.js отвечает за вход в панель и работу с GitHub.
   "name": "nogotok",
+  "main": "worker/index.js",
   "compatibility_date": "2026-09-09",
   "assets": {
-    "directory": "./"
+    "directory": "./",
+    "binding": "ASSETS"
   }
 }

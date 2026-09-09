@@ -1,0 +1,959 @@
+{
+  "settings": {
+    "shopName": "НОГОТОК",
+    "tagline": "Оборудование и расходники для салонов красоты",
+    "city": "Дербент",
+    "address": "ул. Ю. Гагарина, 25",
+    "hours": "Пн–Сб 09:00–18:00, Вс — выходной",
+    "phone": "+7 928 522-89-68",
+    "whatsapp": "79285228968",
+    "instagram": "",
+    "mapLink": "https://yandex.com/maps/-/CTh4EPJ4",
+    "freeDeliveryFrom": 15000,
+    "deliveryText": "Доставка по Дербенту в день заказа. По Дагестану и России — СДЭК и Почта России.",
+    "paymentText": "Наличными, переводом или картой при получении. Для салонов — работаем по счёту.",
+    "guaranteeText": "Официальная гарантия на аппараты 12 месяцев. Обмен расходников при заводском браке.",
+    "heroSlides": [
+      {
+        "title": "Всё для мастера маникюра",
+        "subtitle": "Фрезеры, лампы, вытяжки и расходники в наличии в Дербенте",
+        "button": "В каталог",
+        "link": "#/catalog",
+        "image": "",
+        "bg": "#f2e7e4"
+      },
+      {
+        "title": "Оснащение салона под ключ",
+        "subtitle": "Подберём оборудование и посчитаем смету бесплатно",
+        "button": "Получить расчёт",
+        "link": "#/contacts",
+        "image": "",
+        "bg": "#e9eaf0"
+      },
+      {
+        "title": "Обучение мастеров",
+        "subtitle": "Курсы маникюра, наращивания и бровей в нашем центре",
+        "button": "Узнать программу",
+        "link": "#/catalog/obuchenie",
+        "image": "",
+        "bg": "#f0ece3"
+      }
+    ]
+  },
+  "categories": [
+    {
+      "id": 1,
+      "title": "Аппараты и техника",
+      "slug": "apparaty",
+      "icon": "⚙",
+      "image": "",
+      "sort": 1
+    },
+    {
+      "id": 2,
+      "title": "Маникюр и педикюр",
+      "slug": "manikyur",
+      "icon": "✦",
+      "image": "",
+      "sort": 2
+    },
+    {
+      "id": 3,
+      "title": "Гель-лаки и материалы",
+      "slug": "gel-laki",
+      "icon": "◆",
+      "image": "",
+      "sort": 3
+    },
+    {
+      "id": 4,
+      "title": "Ресницы и брови",
+      "slug": "resnicy-brovi",
+      "icon": "❋",
+      "image": "",
+      "sort": 4
+    },
+    {
+      "id": 5,
+      "title": "Косметология",
+      "slug": "kosmetologiya",
+      "icon": "❀",
+      "image": "",
+      "sort": 5
+    },
+    {
+      "id": 6,
+      "title": "Парикмахерам",
+      "slug": "parikmaheram",
+      "icon": "✂",
+      "image": "",
+      "sort": 6
+    },
+    {
+      "id": 7,
+      "title": "Стерилизация и гигиена",
+      "slug": "sterilizaciya",
+      "icon": "✚",
+      "image": "",
+      "sort": 7
+    },
+    {
+      "id": 8,
+      "title": "Одноразовое",
+      "slug": "odnorazovoe",
+      "icon": "▤",
+      "image": "",
+      "sort": 8
+    },
+    {
+      "id": 9,
+      "title": "Мебель для салона",
+      "slug": "mebel",
+      "icon": "▣",
+      "image": "",
+      "sort": 9
+    },
+    {
+      "id": 10,
+      "title": "Обучение",
+      "slug": "obuchenie",
+      "icon": "★",
+      "image": "",
+      "sort": 10
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "title": "Фрезер для маникюра Strong 210/105L, 65 Вт",
+      "slug": "frezer-strong-210-105l-1",
+      "brand": "Strong",
+      "category": "apparaty",
+      "price": 12900,
+      "oldPrice": 15400,
+      "unit": "шт",
+      "sku": "AP-001",
+      "badge": "hit",
+      "inStock": true,
+      "published": true,
+      "description": "Корейский фрезер с ручкой 105L: 35 000 оборотов, реверс, плавная регулировка. Рабочая лошадка для салона — тихий, не греется на длительных сменах.",
+      "images": [],
+      "specs": [
+        {
+          "k": "Мощность",
+          "v": "65 Вт"
+        },
+        {
+          "k": "Обороты",
+          "v": "до 35 000 об/мин"
+        },
+        {
+          "k": "Ручка",
+          "v": "105L, цанговый зажим"
+        },
+        {
+          "k": "Гарантия",
+          "v": "12 месяцев"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Лампа для маникюра SUN X 54 Вт UV/LED",
+      "slug": "lampa-sun-x-54-2",
+      "brand": "SUN",
+      "category": "apparaty",
+      "price": 2490,
+      "oldPrice": 0,
+      "unit": "шт",
+      "sku": "AP-002",
+      "badge": "hit",
+      "inStock": true,
+      "published": true,
+      "description": "36 светодиодов, таймеры 10/30/60/99 секунд, съёмное дно для педикюра. Полимеризует любые гели и гель-лаки.",
+      "images": [],
+      "specs": [
+        {
+          "k": "Мощность",
+          "v": "54 Вт"
+        },
+        {
+          "k": "Таймер",
+          "v": "10/30/60/99 с"
+        },
+        {
+          "k": "Тип",
+          "v": "UV/LED"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Вытяжка настольная Ulka X2M с HEPA-фильтром",
+      "slug": "vytyazhka-ulka-x2m-3",
+      "brand": "Ulka",
+      "category": "apparaty",
+      "price": 6900,
+      "oldPrice": 0,
+      "unit": "шт",
+      "sku": "AP-003",
+      "badge": "",
+      "inStock": true,
+      "published": true,
+      "description": "Забирает пыль прямо из рабочей зоны, три скорости, сменный фильтр. Обязательная вещь для мастера, который работает по 8 часов.",
+      "images": [],
+      "specs": [
+        {
+          "k": "Производительность",
+          "v": "32 м³/ч"
+        },
+        {
+          "k": "Фильтр",
+          "v": "HEPA, сменный"
+        },
+        {
+          "k": "Уровень шума",
+          "v": "до 45 дБ"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Пылесос маникюрный",
+      "slug": "pylesos-manikyurnyy-4",
+      "brand": "",
+      "category": "apparaty",
+      "price": 9800.0,
+      "oldPrice": 11200.0,
+      "unit": "шт",
+      "sku": "AP-004",
+      "badge": "sale",
+      "inStock": true,
+      "published": true,
+      "description": "Врезается в столешницу, мощный турбинный мотор, мешок для пыли в комплекте.",
+      "images": [],
+      "specs": [
+        {
+          "k": "Мощность",
+          "v": "80 Вт"
+        },
+        {
+          "k": "Монтаж",
+          "v": "встраиваемый"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Сухожаровой шкаф CH-360T для стерилизации",
+      "slug": "suhozhar-ch-360t-5",
+      "brand": "CH",
+      "category": "sterilizaciya",
+      "price": 8400,
+      "oldPrice": 0,
+      "unit": "шт",
+      "sku": "ST-001",
+      "badge": "",
+      "inStock": true,
+      "published": true,
+      "description": "Стерилизация инструмента горячим воздухом до 220 °C. Соответствует требованиям Роспотребнадзора для салонов.",
+      "images": [],
+      "specs": [
+        {
+          "k": "Объём",
+          "v": "1,8 л"
+        },
+        {
+          "k": "Температура",
+          "v": "до 220 °C"
+        },
+        {
+          "k": "Таймер",
+          "v": "есть"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Шариковый стерилизатор Macro 100 Вт",
+      "slug": "sterilizator-macro-6",
+      "brand": "Macro",
+      "category": "sterilizaciya",
+      "price": 2190,
+      "oldPrice": 0,
+      "unit": "шт",
+      "sku": "ST-002",
+      "badge": "",
+      "inStock": true,
+      "published": true,
+      "description": "Экспресс-стерилизация мелкого инструмента за 10–15 секунд. Кварцевые шарики в комплекте.",
+      "images": [],
+      "specs": [
+        {
+          "k": "Мощность",
+          "v": "100 Вт"
+        },
+        {
+          "k": "Нагрев",
+          "v": "250 °C"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Ультразвуковая мойка VGT-6250 1,3 л",
+      "slug": "uzi-moyka-vgt-6250-7",
+      "brand": "VGT",
+      "category": "sterilizaciya",
+      "price": 3900,
+      "oldPrice": 0,
+      "unit": "шт",
+      "sku": "ST-003",
+      "badge": "",
+      "inStock": true,
+      "published": true,
+      "description": "Предстерилизационная очистка фрез и инструмента ультразвуком. Таймер на 5 режимов.",
+      "images": [],
+      "specs": [
+        {
+          "k": "Объём",
+          "v": "1,3 л"
+        },
+        {
+          "k": "Мощность",
+          "v": "50 Вт"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Крафт-пакеты для стерилизации 100×200 мм, 100 шт",
+      "slug": "kraft-pakety-8",
+      "brand": "Стерит",
+      "category": "sterilizaciya",
+      "price": 390,
+      "oldPrice": 0,
+      "unit": "уп",
+      "sku": "ST-004",
+      "badge": "",
+      "inStock": true,
+      "published": true,
+      "description": "Самоклеящиеся пакеты с индикатором стерилизации. Упаковка 100 штук.",
+      "images": [],
+      "specs": [
+        {
+          "k": "Размер",
+          "v": "100×200 мм"
+        },
+        {
+          "k": "В упаковке",
+          "v": "100 шт"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "Набор фрез твердосплавных, 6 шт",
+      "slug": "nabor-frez-9",
+      "brand": "Nail Pro",
+      "category": "manikyur",
+      "price": 1690,
+      "oldPrice": 2100,
+      "unit": "набор",
+      "sku": "MN-001",
+      "badge": "sale",
+      "inStock": true,
+      "published": true,
+      "description": "Базовый набор для аппаратного маникюра: кукуруза, пламя, шар, усечённый конус. Хвостовик 2,35 мм.",
+      "images": [],
+      "specs": [
+        {
+          "k": "Хвостовик",
+          "v": "2,35 мм"
+        },
+        {
+          "k": "Материал",
+          "v": "твердый сплав"
+        },
+        {
+          "k": "В наборе",
+          "v": "6 фрез"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "title": "Колпачки шлифовальные 13 мм, 100 шт + основа",
+      "slug": "kolpachki-13mm-10",
+      "brand": "Nail Pro",
+      "category": "manikyur",
+      "price": 590,
+      "oldPrice": 0,
+      "unit": "уп",
+      "sku": "MN-002",
+      "badge": "hit",
+      "inStock": true,
+      "published": true,
+      "description": "Одноразовые колпачки для педикюра, зернистость 150 грит. Резиновая основа в подарок.",
+      "images": [],
+      "specs": [
+        {
+          "k": "Диаметр",
+          "v": "13 мм"
+        },
+        {
+          "k": "Зернистость",
+          "v": "150 грит"
+        },
+        {
+          "k": "В упаковке",
+          "v": "100 шт"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "title": "Пилка для ногтей 100/180 грит, 25 шт",
+      "slug": "pilki-100-180-11",
+      "brand": "Мастер",
+      "category": "manikyur",
+      "price": 450,
+      "oldPrice": 0,
+      "unit": "уп",
+      "sku": "MN-003",
+      "badge": "",
+      "inStock": true,
+      "published": true,
+      "description": "Двусторонние пилки на мягкой основе, не крошатся. Упаковка 25 штук — выгодно для салона.",
+      "images": [],
+      "specs": [
+        {
+          "k": "Зернистость",
+          "v": "100/180"
+        },
+        {
+          "k": "В упаковке",
+          "v": "25 шт"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "title": "Кусачки для кутикулы профессиональные, 5 мм",
+      "slug": "kusachki-kutikula-12",
+      "brand": "Silver Star",
+      "category": "manikyur",
+      "price": 2350,
+      "oldPrice": 0,
+      "unit": "шт",
+      "sku": "MN-004",
+      "badge": "",
+      "inStock": true,
+      "published": true,
+      "description": "Ручная заточка, медицинская сталь. Держат заточку до полугода активной работы.",
+      "images": [],
+      "specs": [
+        {
+          "k": "Режущая часть",
+          "v": "5 мм"
+        },
+        {
+          "k": "Сталь",
+          "v": "40Х13"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "title": "Педикюрная тёрка с сменными файлами, 10 шт",
+      "slug": "terka-pedikyur-13",
+      "brand": "Мастер",
+      "category": "manikyur",
+      "price": 720,
+      "oldPrice": 0,
+      "unit": "набор",
+      "sku": "MN-005",
+      "badge": "",
+      "inStock": true,
+      "published": true,
+      "description": "Металлическая основа + 10 сменных абразивов 100 грит.",
+      "images": [],
+      "specs": [
+        {
+          "k": "Комплект",
+          "v": "основа + 10 файлов"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "title": "Гель-лак Kodi Professional, 8 мл",
+      "slug": "gel-lak-kodi-14",
+      "brand": "Kodi",
+      "category": "gel-laki",
+      "price": 490,
+      "oldPrice": 0,
+      "unit": "шт",
+      "sku": "GL-001",
+      "badge": "hit",
+      "inStock": true,
+      "published": true,
+      "description": "Плотный пигмент в один слой, более 200 оттенков под заказ. Держится до 4 недель.",
+      "images": [],
+      "specs": [
+        {
+          "k": "Объём",
+          "v": "8 мл"
+        },
+        {
+          "k": "Носкость",
+          "v": "до 4 недель"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "title": "База каучуковая Grattol Rubber Base, 15 мл",
+      "slug": "baza-grattol-15",
+      "brand": "Grattol",
+      "category": "gel-laki",
+      "price": 890,
+      "oldPrice": 0,
+      "unit": "шт",
+      "sku": "GL-002",
+      "badge": "",
+      "inStock": true,
+      "published": true,
+      "description": "Средняя вязкость, выравнивает ногтевую пластину, не течёт в боковые валики.",
+      "images": [],
+      "specs": [
+        {
+          "k": "Объём",
+          "v": "15 мл"
+        },
+        {
+          "k": "Тип",
+          "v": "каучуковая"
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "title": "Топ без липкого слоя Grattol No Wipe, 15 мл",
+      "slug": "top-grattol-16",
+      "brand": "Grattol",
+      "category": "gel-laki",
+      "price": 850,
+      "oldPrice": 0,
+      "unit": "шт",
+      "sku": "GL-003",
+      "badge": "",
+      "inStock": true,
+      "published": true,
+      "description": "Глянец без дисперсии, не желтеет. Экономит время на снятии липкого слоя.",
+      "images": [],
+      "specs": [
+        {
+          "k": "Объём",
+          "v": "15 мл"
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "title": "Обезжириватель / клинсер, 500 мл",
+      "slug": "klinser-500-17",
+      "brand": "Мастер",
+      "category": "gel-laki",
+      "price": 420,
+      "oldPrice": 0,
+      "unit": "шт",
+      "sku": "GL-004",
+      "badge": "",
+      "inStock": true,
+      "published": true,
+      "description": "Дегидратор и снятие липкого слоя. Экономичная салонная фасовка.",
+      "images": [],
+      "specs": [
+        {
+          "k": "Объём",
+          "v": "500 мл"
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "title": "Кисть для дизайна и гель-лака, набор 5 шт",
+      "slug": "kisti-nabor-18",
+      "brand": "Nail Pro",
+      "category": "gel-laki",
+      "price": 780,
+      "oldPrice": 0,
+      "unit": "набор",
+      "sku": "GL-005",
+      "badge": "new",
+      "inStock": true,
+      "published": true,
+      "description": "Синтетический ворс: линия, лепесток, овал, точечная и веерная кисть.",
+      "images": [],
+      "specs": [
+        {
+          "k": "В наборе",
+          "v": "5 кистей"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "title": "Ресницы для наращивания",
+      "slug": "resnicy-dlya-naraschivaniya-19",
+      "brand": "",
+      "category": "resnicy-brovi",
+      "price": 1450.0,
+      "oldPrice": 0,
+      "unit": "шт",
+      "sku": "",
+      "badge": "hit",
+      "inStock": true,
+      "published": true,
+      "description": "Планшет 20 линий, изгиб C и D, толщина 0.07 и 0.10. Мягкие, легко снимаются с ленты.",
+      "images": [],
+      "specs": [
+        {
+          "k": "Длина",
+          "v": "микс 7–13 мм"
+        },
+        {
+          "k": "Изгиб",
+          "v": "C, D"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "title": "Клей для наращивания ресниц Barbara Prime, 5 мл",
+      "slug": "kley-barbara-20",
+      "brand": "Barbara",
+      "category": "resnicy-brovi",
+      "price": 1690,
+      "oldPrice": 0,
+      "unit": "шт",
+      "sku": "RB-002",
+      "badge": "",
+      "inStock": true,
+      "published": true,
+      "description": "Сцепка 1–2 секунды, для опытных мастеров. Хранить в холодильнике.",
+      "images": [],
+      "specs": [
+        {
+          "k": "Объём",
+          "v": "5 мл"
+        },
+        {
+          "k": "Скорость сцепки",
+          "v": "1–2 сек"
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "title": "Пинцеты для наращивания, набор прямой + изогнутый",
+      "slug": "pincety-nabor-21",
+      "brand": "Vivienne",
+      "category": "resnicy-brovi",
+      "price": 1980,
+      "oldPrice": 2400,
+      "unit": "набор",
+      "sku": "RB-003",
+      "badge": "sale",
+      "inStock": true,
+      "published": true,
+      "description": "Медицинская сталь, ручная доводка кончиков. Держат пучок без залипания.",
+      "images": [],
+      "specs": [
+        {
+          "k": "В наборе",
+          "v": "2 пинцета"
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "title": "Хна для бровей Brow Henna, 6 капсул",
+      "slug": "hna-brow-henna-22",
+      "brand": "Brow Henna",
+      "category": "resnicy-brovi",
+      "price": 1290,
+      "oldPrice": 0,
+      "unit": "уп",
+      "sku": "RB-004",
+      "badge": "",
+      "inStock": true,
+      "published": true,
+      "description": "Стойкость на коже до 7 дней, на волосках до 5 недель. Оттенки от светло-русого до графита.",
+      "images": [],
+      "specs": [
+        {
+          "k": "В упаковке",
+          "v": "6 капсул"
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "title": "Аппарат для УЗ-чистки лица Skin Scrubber",
+      "slug": "uz-chistka-lica-23",
+      "brand": "Beauty Line",
+      "category": "kosmetologiya",
+      "price": 5400,
+      "oldPrice": 0,
+      "unit": "шт",
+      "sku": "KS-001",
+      "badge": "new",
+      "inStock": true,
+      "published": true,
+      "description": "Ультразвуковая чистка, фонофорез и микромассаж. Аккумулятор, три режима.",
+      "images": [],
+      "specs": [
+        {
+          "k": "Режимы",
+          "v": "3"
+        },
+        {
+          "k": "Питание",
+          "v": "аккумулятор"
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "title": "Лампа-лупа на струбцине, 5 диоптрий",
+      "slug": "lampa-lupa-24",
+      "brand": "Beauty Line",
+      "category": "kosmetologiya",
+      "price": 4300,
+      "oldPrice": 0,
+      "unit": "шт",
+      "sku": "KS-002",
+      "badge": "",
+      "inStock": true,
+      "published": true,
+      "description": "LED-подсветка по кругу, линза 125 мм, крепление к кушетке или столу.",
+      "images": [],
+      "specs": [
+        {
+          "k": "Увеличение",
+          "v": "5 диоптрий"
+        },
+        {
+          "k": "Крепление",
+          "v": "струбцина"
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "title": "Перчатки нитриловые Benovy, 100 шт",
+      "slug": "perchatki-benovy-25",
+      "brand": "Benovy",
+      "category": "odnorazovoe",
+      "price": 690,
+      "oldPrice": 0,
+      "unit": "уп",
+      "sku": "OD-001",
+      "badge": "hit",
+      "inStock": true,
+      "published": true,
+      "description": "Текстурированные, плотность 3,5 г. Размеры S, M, L в наличии.",
+      "images": [],
+      "specs": [
+        {
+          "k": "В упаковке",
+          "v": "100 шт"
+        },
+        {
+          "k": "Материал",
+          "v": "нитрил"
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "title": "Салфетки безворсовые, 540 шт в рулоне",
+      "slug": "salfetki-bezvorsovye-26",
+      "brand": "Мастер",
+      "category": "odnorazovoe",
+      "price": 340,
+      "oldPrice": 0,
+      "unit": "рулон",
+      "sku": "OD-002",
+      "badge": "",
+      "inStock": true,
+      "published": true,
+      "description": "Плотные, не оставляют ворс при снятии липкого слоя.",
+      "images": [],
+      "specs": [
+        {
+          "k": "В рулоне",
+          "v": "540 шт"
+        }
+      ]
+    },
+    {
+      "id": 27,
+      "title": "Простыни одноразовые 80×200, 100 шт",
+      "slug": "prostyni-odnorazovye-27",
+      "brand": "Спанбонд",
+      "category": "odnorazovoe",
+      "price": 1150,
+      "oldPrice": 0,
+      "unit": "уп",
+      "sku": "OD-003",
+      "badge": "",
+      "inStock": true,
+      "published": true,
+      "description": "Спанбонд 25 г/м², в рулоне с перфорацией. Для кушетки и педикюрного кресла.",
+      "images": [],
+      "specs": [
+        {
+          "k": "Размер",
+          "v": "80×200 см"
+        },
+        {
+          "k": "Плотность",
+          "v": "25 г/м²"
+        }
+      ]
+    },
+    {
+      "id": 28,
+      "title": "Машинка для стрижки Wahl Magic Clip Cordless",
+      "slug": "mashinka-wahl-magic-clip-28",
+      "brand": "Wahl",
+      "category": "parikmaheram",
+      "price": 18900,
+      "oldPrice": 21500,
+      "unit": "шт",
+      "sku": "PR-001",
+      "badge": "sale",
+      "inStock": true,
+      "published": true,
+      "description": "Барберский стандарт: нож Crunch, до 90 минут автономной работы, 8 насадок.",
+      "images": [],
+      "specs": [
+        {
+          "k": "Автономность",
+          "v": "90 минут"
+        },
+        {
+          "k": "Нож",
+          "v": "Crunch Blade"
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "title": "Ножницы парикмахерские 5.5\" прямые",
+      "slug": "nozhnicy-55-29",
+      "brand": "Silver Star",
+      "category": "parikmaheram",
+      "price": 3400,
+      "oldPrice": 0,
+      "unit": "шт",
+      "sku": "PR-002",
+      "badge": "",
+      "inStock": true,
+      "published": true,
+      "description": "Японская сталь 440C, регулировка винта, эргономичное кольцо.",
+      "images": [],
+      "specs": [
+        {
+          "k": "Размер",
+          "v": "5.5 дюйма"
+        },
+        {
+          "k": "Сталь",
+          "v": "440C"
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "title": "Кушетка косметологическая 3-секционная",
+      "slug": "kushetka-3-sekcii-30",
+      "brand": "Med-Mos",
+      "category": "mebel",
+      "price": 24500,
+      "oldPrice": 0,
+      "unit": "шт",
+      "sku": "MB-001",
+      "badge": "",
+      "inStock": false,
+      "published": true,
+      "description": "Регулируемые спинка и подножка, кожзам премиум, нагрузка до 180 кг. Под заказ 7–10 дней.",
+      "images": [],
+      "specs": [
+        {
+          "k": "Секций",
+          "v": "3"
+        },
+        {
+          "k": "Нагрузка",
+          "v": "до 180 кг"
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "title": "Стул мастера со спинкой и газлифтом",
+      "slug": "stul-mastera-31",
+      "brand": "Med-Mos",
+      "category": "mebel",
+      "price": 7900,
+      "oldPrice": 0,
+      "unit": "шт",
+      "sku": "MB-002",
+      "badge": "",
+      "inStock": true,
+      "published": true,
+      "description": "Регулировка высоты 45–60 см, мягкое сиденье, колёса не царапают пол.",
+      "images": [],
+      "specs": [
+        {
+          "k": "Высота",
+          "v": "45–60 см"
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "title": "Курс «Аппаратный маникюр с нуля», 5 дней",
+      "slug": "kurs-manikyur-32",
+      "brand": "Учебный центр Ноготок",
+      "category": "obuchenie",
+      "price": 18000,
+      "oldPrice": 0,
+      "unit": "курс",
+      "sku": "OB-001",
+      "badge": "new",
+      "inStock": true,
+      "published": true,
+      "description": "Практика на моделях, стартовый набор инструмента, сертификат. Группы до 4 человек.",
+      "images": [],
+      "specs": [
+        {
+          "k": "Длительность",
+          "v": "5 дней"
+        },
+        {
+          "k": "Формат",
+          "v": "очно, Дербент"
+        },
+        {
+          "k": "Документ",
+          "v": "сертификат"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>НОГОТОК — оборудование и расходники для салонов красоты в Дербенте</title>
+<meta name="description" content="Магазин «Ноготок» в Дербенте: фрезеры, лампы, вытяжки, гель-лаки, расходники и мебель для салонов красоты. Заказ в WhatsApp за минуту.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💅</text></svg>">
+</head>
+<body>
+
+<!-- ------------------------------------------------------------- шапка -->
+<div class="topbar">
+  <div class="wrap">
+    <div class="topbar-left">
+      <span id="tb-city">Дербент</span>
+      <span id="tb-address"></span>
+      <span id="tb-hours"></span>
+    </div>
+    <div class="topbar-right">
+      <a href="#/delivery">Доставка и оплата</a>
+      <a href="#/contacts">Контакты</a>
+      <a id="tb-phone" href="tel:"><b></b></a>
+    </div>
+  </div>
+</div>
+
+<header class="header">
+  <div class="wrap header-main">
+    <button class="burger" id="burger">
+      <span class="burger-icon"><i></i><i></i><i></i></span>
+      <span class="txt">Каталог</span>
+    </button>
+
+    <a href="#/" class="logo">
+      <span class="logo-name" id="logo-name">НОГОТОК</span>
+      <span class="logo-sub">всё для салонов красоты</span>
+    </a>
+
+    <form class="search" id="search-form" autocomplete="off">
+      <input type="search" id="search-input" placeholder="Искать: фрезер, гель-лак, перчатки…">
+      <button class="search-btn" type="submit" aria-label="Найти">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path>
+        </svg>
+      </button>
+    </form>
+
+    <div class="header-actions">
+      <a class="action" id="wa-header" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm0 18.15h-.01a8.2 8.2 0 01-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 01-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23a8.23 8.23 0 018.24 8.24c0 4.54-3.7 8.23-8.24 8.23zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.97-.14.16-.29.18-.54.06-.25-.13-1.05-.39-1.99-1.23-.74-.66-1.24-1.47-1.38-1.72-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.15.16-.25.25-.41.08-.17.04-.31-.02-.44-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.16 0-.43.06-.65.31-.22.25-.85.83-.85 2.02s.87 2.34 1 2.5c.12.17 1.72 2.62 4.16 3.67.58.25 1.03.4 1.39.51.58.19 1.11.16 1.53.1.47-.07 1.47-.6 1.68-1.18.2-.58.2-1.07.14-1.18-.06-.1-.22-.16-.47-.28z"/></svg>
+        <span>WhatsApp</span>
+      </a>
+      <button class="action" id="open-cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path d="M5 7h14l-1.2 12.2a2 2 0 01-2 1.8H8.2a2 2 0 01-2-1.8L5 7z"></path>
+          <path d="M9 7V5.5a3 3 0 016 0V7"></path>
+        </svg>
+        <span>Корзина</span>
+        <i class="badge-count hidden" id="cart-count">0</i>
+      </button>
+    </div>
+  </div>
+
+  <nav class="navbar"><div class="wrap" id="topnav"></div></nav>
+</header>
+
+<!-- --------------------------------------------------------- мега-меню -->
+<div class="megamenu" id="megamenu">
+  <div class="megamenu-panel">
+    <div class="wrap">
+      <div class="megamenu-grid" id="megamenu-grid"></div>
+    </div>
+  </div>
+</div>
+
+<main id="app"></main>
+
+<!-- ------------------------------------------------------------- футер -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="logo-name" style="font-size:20px">НОГОТОК</div>
+        <p style="color:var(--muted);font-size:13px;margin-top:14px;max-width:280px" id="f-tagline"></p>
+        <div style="margin-top:20px">
+          <div class="contact-line" id="f-phone"></div>
+          <div style="color:var(--muted);font-size:13px" id="f-address"></div>
+          <div style="color:var(--muted);font-size:13px" id="f-hours"></div>
+        </div>
+      </div>
+      <div>
+        <h5>Каталог</h5>
+        <ul id="f-cats"></ul>
+      </div>
+      <div>
+        <h5>Покупателям</h5>
+        <ul>
+          <li><a href="#/delivery">Доставка и оплата</a></li>
+          <li><a href="#/contacts">Контакты и адрес</a></li>
+          <li><a href="#/catalog?badge=sale">Скидки</a></li>
+          <li><a href="#/catalog/obuchenie">Обучение мастеров</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Связаться</h5>
+        <ul>
+          <li><a id="f-wa" target="_blank" rel="noopener">Написать в WhatsApp</a></li>
+          <li><a id="f-map" target="_blank" rel="noopener">Мы на Яндекс.Картах</a></li>
+          <li><a href="admin.html">Панель управления</a></li>
+        </ul>
+        <p style="color:var(--muted);font-size:12px;margin-top:18px;line-height:1.55">
+          Оптовым клиентам и салонам — отдельные цены. Напишите нам, подберём поставку под ваш кабинет.
+        </p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span id="year"></span> «Ноготок», Дербент. Не является публичной офертой.</span>
+      <span>Сайт работает локально · заказы уходят в WhatsApp</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ------------------------------------------------------------ корзина -->
+<div class="drawer-back" id="drawer-back"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-head">
+    <h3>Корзина <span id="drawer-count" style="color:var(--muted);font-weight:400"></span></h3>
+    <button id="close-cart" style="font-size:24px;line-height:1">×</button>
+  </div>
+  <div class="drawer-body" id="cart-body"></div>
+  <div class="drawer-foot" id="cart-foot"></div>
+</aside>
+
+<!-- --------------------------------------------------------- оформление -->
+<div class="modal-back" id="modal-back">
+  <div class="modal" id="modal"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/store.js"></script>
+</body>
+</html>

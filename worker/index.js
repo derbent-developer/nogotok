@@ -14,7 +14,7 @@
 const GH = 'https://api.github.com';
 const COOKIE = 'nogotok_session';
 const SESSION_TTL = 12 * 60 * 60;          // 12 часов
-const ITERATIONS = 200000;
+const ITERATIONS = 100000;              // потолок Cloudflare Workers
 const LOGIN_DELAY = 700;                    // тормозим перебор пароля
 const MAX_FAILS = 12;                       // попыток за окно
 const FAIL_WINDOW = 15 * 60 * 1000;
@@ -126,10 +126,10 @@ async function proxy(request, env, path){
 }
 
 /* ------------------------------------------------------------- пароль */
-async function hashPassword(password, saltB64){
+async function hashPassword(password, saltB64, iterations = ITERATIONS){
   const base = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveBits']);
   const bits = await crypto.subtle.deriveBits(
-    { name:'PBKDF2', salt: b64ToBytes(saltB64), iterations: ITERATIONS, hash:'SHA-256' }, base, 256);
+    { name:'PBKDF2', salt: b64ToBytes(saltB64), iterations, hash:'SHA-256' }, base, 256);
   return bytesToB64(bits);
 }
 
@@ -234,7 +234,7 @@ async function login(request, env){
   const auth = await readAuth(env);
   if (!auth) throw fail('Пароль ещё не задан. Откройте первый запуск.', 409);
   await sleep(LOGIN_DELAY);
-  const hash = await hashPassword(String(password), auth.data.salt);
+  const hash = await hashPassword(String(password), auth.data.salt, auth.data.iterations || ITERATIONS);
   if (hash !== auth.data.hash){
     counter.bad();
     throw fail('Неверный пароль', 401);
@@ -272,7 +272,7 @@ async function changePassword(request, env){
   const { current = '', next = '' } = await request.json().catch(() => ({}));
   const auth = await readAuth(env);
   if (!auth) throw fail('Пароль ещё не задан', 409);
-  if (await hashPassword(String(current), auth.data.salt) !== auth.data.hash)
+  if (await hashPassword(String(current), auth.data.salt, auth.data.iterations || ITERATIONS) !== auth.data.hash)
     throw fail('Текущий пароль неверный', 403);
   checkPasswordShape(next);
   const salt = bytesToB64(crypto.getRandomValues(new Uint8Array(16)));

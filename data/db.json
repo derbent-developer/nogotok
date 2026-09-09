@@ -15,20 +15,28 @@
     "guaranteeText": "Официальная гарантия на аппараты 12 месяцев. Обмен расходников при заводском браке.",
     "heroSlides": [
       {
-        "title": "Всё для мастера ",
-        "subtitle": "рычал-су в наличии в Дербенте",
-        "button": "В каталог",
-        "link": "#/catalog",
-        "image": "assets/uploads/20260909-ye65v3.jpg",
-        "bg": "#f2e7e4"
-      },
-      {
         "title": "Оснащение салона под ключ",
         "subtitle": "Подберём оборудование и посчитаем смету бесплатно",
         "button": "Получить расчёт",
         "link": "#/contacts",
         "image": "",
         "bg": "#e9eaf0"
+      },
+      {
+        "title": "Новый баннер",
+        "subtitle": "",
+        "button": "В каталог",
+        "link": "#/catalog",
+        "bg": "#f4f0ee",
+        "image": ""
+      },
+      {
+        "title": "Новый баннер",
+        "subtitle": "",
+        "button": "В каталог",
+        "link": "#/catalog",
+        "bg": "#f4f0ee",
+        "image": ""
       }
     ]
   },

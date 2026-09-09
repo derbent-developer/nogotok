@@ -43,6 +43,15 @@ export default {
 async function api(request, env, url){
   const p = url.pathname;
   const m = request.method;
+  if (p === '/api/diag' && m === 'GET'){
+    // только имена переменных, значения не раскрываем
+    return json({
+      ok: true,
+      переменные: Object.keys(env).sort(),
+      естьКлюч: typeof env.GITHUB_TOKEN === 'string' && env.GITHUB_TOKEN.length > 0,
+      длинаКлюча: typeof env.GITHUB_TOKEN === 'string' ? env.GITHUB_TOKEN.length : 0,
+    });
+  }
   if (!env.GITHUB_TOKEN) return json({ ok:false, error:'На сервере не задан секрет GITHUB_TOKEN' }, 503);
 
   if (p === '/api/session'  && m === 'GET')  return sessionInfo(request, env);

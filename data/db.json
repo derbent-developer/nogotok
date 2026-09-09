@@ -223,8 +223,8 @@
       "slug": "pylesos-manikyurnyy-4",
       "brand": "",
       "category": "apparaty",
-      "price": 9800.0,
-      "oldPrice": 11200.0,
+      "price": 9800,
+      "oldPrice": 11200,
       "unit": "шт",
       "sku": "AP-004",
       "badge": "sale",
@@ -609,7 +609,7 @@
       "slug": "resnicy-dlya-naraschivaniya-19",
       "brand": "",
       "category": "resnicy-brovi",
-      "price": 1450.0,
+      "price": 1450,
       "oldPrice": 0,
       "unit": "шт",
       "sku": "",
@@ -954,6 +954,24 @@
           "v": "сертификат"
         }
       ]
+    },
+    {
+      "id": 33,
+      "createdAt": "2026-09-09T17:10:16",
+      "title": "рычал-су",
+      "slug": "rychal-su-33",
+      "brand": "дербент",
+      "category": "resnicy-brovi",
+      "sku": "",
+      "price": 100,
+      "oldPrice": 110,
+      "unit": "шт",
+      "badge": "",
+      "inStock": true,
+      "published": true,
+      "description": "",
+      "images": [],
+      "specs": []
     }
   ]
 }

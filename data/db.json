@@ -954,24 +954,6 @@
           "v": "сертификат"
         }
       ]
-    },
-    {
-      "id": 33,
-      "createdAt": "2026-09-09T17:10:16",
-      "title": "рычал-су",
-      "slug": "rychal-su-33",
-      "brand": "дербент",
-      "category": "resnicy-brovi",
-      "sku": "",
-      "price": 100,
-      "oldPrice": 110,
-      "unit": "шт",
-      "badge": "",
-      "inStock": true,
-      "published": true,
-      "description": "",
-      "images": [],
-      "specs": []
     }
   ]
 }

@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/admin.css?v=202609100031">
+<link rel="stylesheet" href="css/admin.css?v=202609100137">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙️</text></svg>">
 </head>
 <body>
@@ -18,46 +18,42 @@
   <form class="login-card" id="login-form">
     <div class="brand">НОГОТОК</div>
     <div class="sub">панель управления</div>
-    <!-- обычный вход: пароль один для всех устройств -->
+    <!-- вход по коду доступа: ключ уже сохранён на этом устройстве -->
     <div id="pin-block" class="hidden">
       <div class="f">
-        <label class="lbl">Пароль</label>
-        <input class="inp" type="password" id="pin" inputmode="numeric" autocomplete="current-password"
-               maxlength="32" placeholder="8 цифр">
+        <label class="lbl">Код доступа</label>
+        <input class="inp" type="password" id="pin" inputmode="numeric" autocomplete="off"
+               maxlength="12" placeholder="цифры">
       </div>
       <button class="btn" style="width:100%" type="submit">Войти</button>
       <div class="hint" style="margin-top:16px">
-        Пароль меняется в панели, в разделе «Безопасность».
-        <a href="#" id="use-key" style="text-decoration:underline">Первый запуск</a>
+        <a href="#" id="use-key" style="text-decoration:underline">Забыли код? Войти по ключу GitHub</a>
       </div>
     </div>
 
-    <!-- первый запуск: пароль задаётся один раз для всех устройств -->
+    <!-- первый вход на устройстве: ключ GitHub и придуманный код -->
     <div id="key-block">
-      <div class="hint" style="margin:-8px 0 18px">
-        Пароль для панели ещё не задан. Задайте его один раз, дальше он будет
-        работать на любом телефоне и компьютере.
-      </div>
       <div class="f">
         <label class="lbl">Ключ доступа GitHub</label>
         <input class="inp" type="password" id="password" placeholder="github_pat_..." autocomplete="off">
       </div>
       <div class="row2">
         <div class="f">
-          <label class="lbl">Придумайте пароль</label>
-          <input class="inp" type="password" id="newpin" inputmode="numeric" maxlength="32"
-                 autocomplete="new-password" placeholder="8 цифр">
+          <label class="lbl">Придумайте код</label>
+          <input class="inp" type="password" id="newpin" inputmode="numeric" maxlength="12"
+                 autocomplete="off" placeholder="8 цифр">
         </div>
         <div class="f">
-          <label class="lbl">Повторите пароль</label>
-          <input class="inp" type="password" id="newpin2" inputmode="numeric" maxlength="32"
-                 autocomplete="new-password" placeholder="8 цифр">
+          <label class="lbl">Повторите код</label>
+          <input class="inp" type="password" id="newpin2" inputmode="numeric" maxlength="12"
+                 autocomplete="off" placeholder="8 цифр">
         </div>
       </div>
-      <button class="btn" style="width:100%" type="submit">Задать пароль и войти</button>
+      <button class="btn" style="width:100%" type="submit">Войти</button>
       <div class="hint" style="margin-top:16px">
-        Ключ нужен только для подтверждения, он никуда не сохраняется в браузере.
-        <a href="#" id="help-link" style="text-decoration:underline">Подробнее</a>
+        Ключ сохранится на этом устройстве в зашифрованном виде, дальше вход только по коду.
+        Оставьте код пустым, если не хотите ничего сохранять.
+        <a href="#" id="help-link" style="text-decoration:underline">Как получить ключ</a>
       </div>
     </div>
 
@@ -92,7 +88,7 @@
 <div class="back" id="back"><div class="sheet" id="sheet"></div></div>
 <div class="toast" id="toast"></div>
 
-<script src="js/config.js?v=202609100031"></script>
-<script src="js/admin.js?v=202609100031"></script>
+<script src="js/config.js?v=202609100137"></script>
+<script src="js/admin.js?v=202609100137"></script>
 </body>
 </html>

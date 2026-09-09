@@ -5,32 +5,50 @@ const $  = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money = n => new Intl.NumberFormat('ru-RU').format(Math.round(n || 0)) + ' ₽';
-const SITE_URL = CFG.siteUrl || location.origin + '/';
+const TOKEN_KEY = 'nogotok_gh_token';      // старый формат: ключ лежал открытым
+const LOCK_KEY  = 'nogotok_locked_key';    // ключ, закрытый кодом доступа
+const TRY_KEY   = 'nogotok_pin_tries';
+const MAX_TRIES = 10;
+const SITE_URL = CFG.siteUrl || `https://${CFG.owner}.github.io/${CFG.repo}/`;
 
-const A = { user: null, db: null, sha: '', tab: 'products', filter: { q:'', cat:'' }, busy: false };
+const A = { token: '', user: null, db: null, sha: '', tab: 'products', filter: { q:'', cat:'' }, busy: false };
 
-/* -------------------------------------- запросы идут через свой сервер */
-/* Ключ GitHub лежит в секретах Cloudflare и в браузер не попадает. */
+const box = {
+  get(){ try{ return JSON.parse(localStorage.getItem(LOCK_KEY) || 'null'); }catch(e){ return null; } },
+  set(v){ try{ localStorage.setItem(LOCK_KEY, JSON.stringify(v)); }catch(e){} },
+  drop(){ try{ localStorage.removeItem(LOCK_KEY); localStorage.removeItem(TRY_KEY); }catch(e){} },
+  tries(){ return +(localStorage.getItem(TRY_KEY) || 0); },
+  bump(n){ try{ localStorage.setItem(TRY_KEY, String(n)); }catch(e){} },
+};
 
-async function api(path, opts = {}){
-  const res = await fetch('/api' + path, {
-    ...opts,
-    credentials: 'same-origin',
-    headers: { 'Content-Type':'application/json', ...(opts.headers || {}) },
-  });
-  let data = {};
-  try{ data = await res.json(); }catch(e){}
-  if (res.status === 401){ showLogin(); throw new Error('Вход истёк, войдите заново'); }
-  if (!res.ok || data.ok === false){
-    const err = new Error(data.error || data.message || `Ошибка запроса (${res.status})`);
-    err.status = res.status;
-    throw err;
-  }
-  return data;
+/* ---------------------------------------- код доступа закрывает ключ GitHub */
+const ENC = new TextEncoder(), DEC = new TextDecoder();
+const toB64 = b => btoa(String.fromCharCode(...new Uint8Array(b)));
+const fromB64 = t => Uint8Array.from(atob(t), c => c.charCodeAt(0));
+
+async function pinKey(pin, salt){
+  const base = await crypto.subtle.importKey('raw', ENC.encode(pin), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey(
+    { name:'PBKDF2', salt, iterations:250000, hash:'SHA-256' },
+    base, { name:'AES-GCM', length:256 }, false, ['encrypt','decrypt']);
 }
+async function lockToken(token, pin){
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const iv   = crypto.getRandomValues(new Uint8Array(12));
+  const key  = await pinKey(pin, salt);
+  const data = await crypto.subtle.encrypt({ name:'AES-GCM', iv }, key, ENC.encode(token));
+  return { v:1, salt:toB64(salt), iv:toB64(iv), data:toB64(data) };
+}
+async function unlockToken(saved, pin){
+  const key = await pinKey(pin, fromB64(saved.salt));
+  const out = await crypto.subtle.decrypt({ name:'AES-GCM', iv: fromB64(saved.iv) }, key, fromB64(saved.data));
+  return DEC.decode(out);
+}
+const validPin = p => /^\d{4,12}$/.test(p);
 
-const gh = (path, opts) => api('/gh' + path, opts);
+try{ A.token = localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY) || ''; }catch(e){}
 
+/* ------------------------------------------------------- работа с GitHub */
 function b64encode(text){
   const bytes = new TextEncoder().encode(text);
   let bin = '';
@@ -39,7 +57,31 @@ function b64encode(text){
 }
 function b64decode(b64){
   const bin = atob(String(b64).replace(/\s/g, ''));
-  return new TextDecoder().decode(Uint8Array.from(bin, c => c.charCodeAt(0)));
+  const bytes = Uint8Array.from(bin, c => c.charCodeAt(0));
+  return new TextDecoder().decode(bytes);
+}
+
+async function gh(path, opts = {}){
+  const res = await fetch('https://api.github.com' + path, {
+    ...opts,
+    headers: {
+      'Accept': 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28',
+      'Authorization': 'Bearer ' + A.token,
+      ...(opts.body ? { 'Content-Type': 'application/json' } : {}),
+      ...(opts.headers || {}),
+    },
+  });
+  let data = null;
+  try{ data = await res.json(); }catch(e){}
+  if (res.status === 401){ logout(); throw new Error('Ключ доступа не принят. Войдите заново.'); }
+  if (res.status === 403 && (data?.message || '').includes('rate limit')) throw new Error('GitHub временно ограничил запросы, попробуйте через минуту');
+  if (!res.ok){
+    const err = new Error(data?.message || `Ошибка GitHub (${res.status})`);
+    err.status = res.status;
+    throw err;
+  }
+  return data;
 }
 
 const contentsPath = file => `/repos/${CFG.owner}/${CFG.repo}/contents/${file}`;
@@ -102,8 +144,9 @@ function publishState(state){
   const bar = $('#publish');
   if (!bar) return;
   const map = {
-    saving:    ['saving',    'Сохраняем…'],
+    saving:    ['saving',    'Сохраняем на сайт…'],
     published: ['published', 'Сохранено. Сайт обновится в течение минуты.'],
+    live:      ['live',      'Всё опубликовано, сайт обновлён.'],
     idle:      ['idle',      ''],
   };
   const [cls, text] = map[state] || map.idle;
@@ -111,6 +154,23 @@ function publishState(state){
   bar.innerHTML = text
     ? `<span>${text}</span><a href="${SITE_URL}" target="_blank" rel="noopener">Открыть сайт ↗</a>`
     : '';
+  if (state === 'published') watchBuild();
+}
+
+let buildTimer = null;
+async function watchBuild(){
+  clearTimeout(buildTimer);
+  let tries = 0;
+  const tick = async () => {
+    tries++;
+    try{
+      const b = await gh(`/repos/${CFG.owner}/${CFG.repo}/pages/builds/latest?t=${Date.now()}`);
+      if (b.status === 'built'){ publishState('live'); return; }
+      if (b.status === 'errored'){ toast('GitHub не смог собрать сайт, проверьте вкладку Actions', true); return; }
+    }catch(e){ return; }                     // нет прав на чтение статуса — просто молчим
+    if (tries < 20) buildTimer = setTimeout(tick, 6000);
+  };
+  buildTimer = setTimeout(tick, 8000);
 }
 
 /* ---------------------------------------------------------------- мелочи */
@@ -123,15 +183,13 @@ function toast(text, bad){
   window.__t = setTimeout(() => t.classList.remove('show'), 3200);
 }
 
-async function logout(){
-  try{ await fetch('/api/logout', { method:'POST', credentials:'same-origin' }); }catch(e){}
-  A.db = null; A.user = null;
-  showLogin();
-}
-
-function showLogin(){
+function logout(forget){
+  try{ localStorage.removeItem(TOKEN_KEY); sessionStorage.removeItem(TOKEN_KEY); }catch(e){}
+  if (forget) box.drop();
+  A.token = ''; A.db = null; A.user = null;
   $('#panel').classList.add('hidden');
   $('#login').classList.remove('hidden');
+  pickLoginMode();
 }
 
 /* ------------------------------------------------------------------ вход */
@@ -141,56 +199,107 @@ function showLoginError(text){
   err.style.display = text ? 'block' : 'none';
 }
 
-function loginMode(mode){
-  $('#pin-block').classList.toggle('hidden', mode !== 'password');
-  $('#key-block').classList.toggle('hidden', mode !== 'setup');
-  showLoginError('');
-  const field = mode === 'setup' ? $('#password') : $('#pin');
-  if (field) field.focus();
+function pickLoginMode(){
+  const saved = box.get();
+  $('#pin-block').classList.toggle('hidden', !saved);
+  $('#key-block').classList.toggle('hidden', !!saved);
+  (saved ? $('#pin') : $('#password')).focus();
 }
+
+$('#use-key').onclick = e => {
+  e.preventDefault();
+  $('#pin-block').classList.add('hidden');
+  $('#key-block').classList.remove('hidden');
+  showLoginError('');
+  $('#password').focus();
+};
 
 $('#login-form').onsubmit = async e => {
   e.preventDefault();
-  const setupMode = !$('#key-block').classList.contains('hidden');
-  const btn = e.submitter || $('#login-form button[type=submit]');
+  const byKey = !$('#key-block').classList.contains('hidden');
+  const btn = e.submitter || $('#key-block button');
+  btn.disabled = true;
   const label = btn.textContent;
-  btn.disabled = true; btn.textContent = 'Проверяем…';
+  btn.textContent = 'Проверяем…';
   showLoginError('');
   try{
-    if (setupMode){
-      const key = $('#password').value.trim();
-      const pin = $('#newpin').value.trim(), pin2 = $('#newpin2').value.trim();
-      if (!key) throw new Error('Вставьте ключ доступа GitHub');
-      if (pin !== pin2) throw new Error('Пароли не совпадают');
-      await api('/setup', { method:'POST', body: JSON.stringify({ key, password: pin }) });
-      $('#password').value = ''; $('#newpin').value = ''; $('#newpin2').value = '';
-    }else{
-      await api('/login', { method:'POST', body: JSON.stringify({ password: $('#pin').value }) });
-      $('#pin').value = '';
-    }
-    await start();
+    await (byKey ? loginWithKey() : loginWithPin());
   }catch(ex){
+    A.token = '';
     showLoginError(ex.message);
   }finally{
     btn.disabled = false; btn.textContent = label;
   }
 };
 
-$('#use-key').onclick = e => { e.preventDefault(); loginMode('setup'); };
+async function loginWithPin(){
+  const pin = $('#pin').value.trim();
+  const saved = box.get();
+  if (!saved) { pickLoginMode(); throw new Error('Ключ на этом устройстве не сохранён'); }
+  let token;
+  try{
+    token = await unlockToken(saved, pin);
+  }catch(ex){
+    const left = MAX_TRIES - (box.tries() + 1);
+    box.bump(box.tries() + 1);
+    if (left <= 0){
+      box.drop(); pickLoginMode();
+      throw new Error('Слишком много попыток. Сохранённый ключ удалён, войдите по ключу GitHub.');
+    }
+    throw new Error(`Неверный код. Осталось попыток: ${left}`);
+  }
+  A.token = token;
+  await checkAccess();
+  box.bump(0);
+  $('#pin').value = '';
+  await start();
+}
+
+async function loginWithKey(){
+  const token = $('#password').value.trim();
+  if (!token) throw new Error('Вставьте ключ доступа GitHub');
+  const pin = $('#newpin').value.trim();
+  const pin2 = $('#newpin2').value.trim();
+  if (pin || pin2){
+    if (pin !== pin2) throw new Error('Коды не совпадают');
+    if (!validPin(pin)) throw new Error('Код должен состоять из цифр, от 4 до 12 знаков');
+  }
+  A.token = token;
+  await checkAccess();
+  if (pin){
+    box.set(await lockToken(token, pin));
+    box.bump(0);
+    try{ localStorage.removeItem(TOKEN_KEY); sessionStorage.removeItem(TOKEN_KEY); }catch(e){}
+  }
+  $('#password').value = ''; $('#newpin').value = ''; $('#newpin2').value = '';
+  await start();
+}
+
+async function checkAccess(){
+  A.user = await gh('/user');
+  const repo = await gh(`/repos/${CFG.owner}/${CFG.repo}`);
+  if (repo.permissions && repo.permissions.push === false)
+    console.warn('Ключ выглядит как «только чтение» — сохранение может не пройти');
+}
 
 $('#help-link').onclick = e => {
   e.preventDefault();
   alert(
-    'Первый запуск делается один раз.\n\n' +
-    'Ключ GitHub нужен только чтобы подтвердить, что пароль задаёте вы.\n' +
-    'Он должен совпадать с ключом, который добавлен в секреты Cloudflare\n' +
-    'под именем GITHUB_TOKEN.\n\n' +
-    'Дальше на любом устройстве вход только по паролю, ключ больше не понадобится.'
+    'Как получить ключ доступа:\n\n' +
+    '1. Зайдите на github.com под аккаунтом с доступом к ' + CFG.owner + '\n' +
+    '2. Settings → Developer settings → Personal access tokens → Fine-grained tokens\n' +
+    '3. Generate new token. Имя любое, срок — на год.\n' +
+    '4. Resource owner → ' + CFG.owner + ', Repository access → Only select repositories → ' + CFG.repo + '\n' +
+    '5. Permissions → Repository permissions → Contents: Read and write\n' +
+    '6. Generate token и скопируйте строку, которая начинается на github_pat_\n\n' +
+    'Ключ нужен один раз на устройство. Дальше вход по коду доступа.'
   );
 };
 
+$('#logout').onclick = e => { e.preventDefault(); logout(); };
+$$('#nav button').forEach(b => b.onclick = () => { A.tab = b.dataset.tab; render(); });
+
 async function start(){
-  try{ A.user = await gh('/user'); }catch(e){ A.user = null; }
   await loadDb();
   $('#login').classList.add('hidden');
   $('#panel').classList.remove('hidden');
@@ -647,60 +756,69 @@ function viewSettings(){
 /* --------------------------------------------------------- безопасность */
 function viewSecurity(){
   $('#view').innerHTML = `
-    <div class="topline"><div><h1>Безопасность</h1><p>Пароль от панели и резервные копии</p></div></div>
+    <div class="topline"><div><h1>Безопасность</h1><p>Доступ к панели и резервные копии</p></div></div>
 
     <div class="card" style="max-width:600px">
-      <h3>Смена пароля</h3>
+      <h3>Кто сейчас в панели</h3>
+      <div class="p-line hint" style="margin:0 0 6px">Аккаунт GitHub: <b>${esc(A.user?.login || '—')}</b></div>
+      <div class="hint" style="margin:0 0 6px">Репозиторий сайта: <b>${esc(CFG.owner)}/${esc(CFG.repo)}</b></div>
+      <div class="hint" style="margin:0 0 18px">Адрес магазина: <a href="${SITE_URL}" target="_blank" rel="noopener" style="text-decoration:underline">${SITE_URL}</a></div>
+      <button class="btn ghost" id="drop-token">Выйти и забыть ключ на этом устройстве</button>
+    </div>
+
+    <div class="card" style="max-width:600px">
+      <h3>Код доступа</h3>
       <p class="hint" style="margin:0 0 16px">
-        Пароль один на все устройства. Смените его здесь, и на телефоне, планшете
-        и компьютере сразу будет действовать новый. Ключ GitHub хранится на сервере
-        и в браузер не попадает.
+        Код заменяет длинный ключ GitHub при входе на этом устройстве. Ключ хранится здесь же,
+        но в зашифрованном виде: без кода его не прочитать. На другом устройстве код нужно задать заново.
       </p>
-      <form id="pwf">
-        <div class="f"><label class="lbl">Текущий пароль</label>
-          <input class="inp" type="password" name="current" inputmode="numeric" autocomplete="off"></div>
+      <form id="pinf">
         <div class="row2">
-          <div class="f"><label class="lbl">Новый пароль</label>
-            <input class="inp" type="password" name="next" inputmode="numeric" maxlength="32" autocomplete="off" placeholder="8 цифр"></div>
-          <div class="f"><label class="lbl">Повторите новый</label>
-            <input class="inp" type="password" name="repeat" inputmode="numeric" maxlength="32" autocomplete="off" placeholder="8 цифр"></div>
+          <div class="f"><label class="lbl">Новый код</label>
+            <input class="inp" type="password" name="pin" inputmode="numeric" maxlength="12" placeholder="8 цифр"></div>
+          <div class="f"><label class="lbl">Повторите код</label>
+            <input class="inp" type="password" name="pin2" inputmode="numeric" maxlength="12" placeholder="8 цифр"></div>
         </div>
-        <button class="btn" type="submit">Сменить пароль</button>
-        <div class="hint">Не меньше 6 цифр. После смены на других устройствах нужно будет войти заново.</div>
+        <button class="btn" type="submit">${box.get() ? 'Сменить код' : 'Установить код'}</button>
       </form>
     </div>
 
     <div class="card" style="max-width:600px">
-      <h3>Кто сейчас в панели</h3>
-      <div class="hint" style="margin:0 0 6px">Ключ на сервере принадлежит аккаунту: <b>${esc(A.user?.login || 'не определён')}</b></div>
-      <div class="hint" style="margin:0 0 6px">Репозиторий сайта: <b>${esc(CFG.owner)}/${esc(CFG.repo)}</b></div>
-      <div class="hint" style="margin:0 0 18px">Адрес магазина: <a href="${SITE_URL}" target="_blank" rel="noopener" style="text-decoration:underline">${SITE_URL}</a></div>
-      <button class="btn ghost" id="drop-token">Выйти из панели</button>
+      <h3>Если ключ попал не в те руки</h3>
+      <p class="hint" style="margin:0">
+        Зайдите на github.com → Settings → Developer settings → Personal access tokens →
+        Fine-grained tokens и нажмите Revoke у нужного ключа. Он сразу перестанет работать,
+        а вы создадите новый. Сайт и товары при этом не пострадают.
+      </p>
     </div>
 
     <div class="card" style="max-width:600px">
       <h3>Резервная копия</h3>
       <p class="hint" style="margin:0 0 14px">
-        Каталог и настройки лежат в файле <b>${esc(CFG.dbPath)}</b> закрытого репозитория,
-        фотографии — в папке <b>${esc(CFG.uploadDir)}</b>. GitHub хранит историю всех изменений,
-        поэтому любую правку можно откатить. Кнопка ниже скачает текущий каталог на устройство.
+        Каталог и настройки лежат в файле <b>${esc(CFG.dbPath)}</b> в репозитории, фотографии — в папке
+        <b>${esc(CFG.uploadDir)}</b>. GitHub хранит историю всех изменений, поэтому любую правку можно откатить.
+        Кнопка ниже скачает текущий каталог себе на устройство.
       </p>
       <button class="btn ghost" id="backup">Скачать копию каталога</button>
     </div>`;
 
-  $('#drop-token').onclick = () => { if (confirm('Выйти из панели?')) logout(); };
+  $('#drop-token').onclick = () => { if (confirm('Выйти и удалить ключ с этого устройства?')) logout(true); };
 
-  $('#pwf').onsubmit = async e => {
+  $('#pinf').onsubmit = async e => {
     e.preventDefault();
     const f = e.target;
-    if (f.next.value !== f.repeat.value) return toast('Новые пароли не совпадают', true);
+    const pin = f.pin.value.trim(), pin2 = f.pin2.value.trim();
+    if (pin !== pin2) return toast('Коды не совпадают', true);
+    if (!validPin(pin)) return toast('Код — только цифры, от 4 до 12 знаков', true);
     try{
-      await api('/password', { method:'POST', body: JSON.stringify({ current: f.current.value, next: f.next.value }) });
+      box.set(await lockToken(A.token, pin));
+      box.bump(0);
+      try{ localStorage.removeItem(TOKEN_KEY); sessionStorage.removeItem(TOKEN_KEY); }catch(ex){}
       f.reset();
-      toast('Пароль изменён, он уже действует на всех устройствах');
-    }catch(ex){ toast(ex.message, true); }
+      toast('Код сохранён. Следующий вход — по нему');
+      viewSecurity();
+    }catch(ex){ toast('Не удалось сохранить код: ' + ex.message, true); }
   };
-
   $('#backup').onclick = () => {
     const blob = new Blob([JSON.stringify(A.db, null, 2)], { type:'application/json' });
     const a = document.createElement('a');
@@ -725,23 +843,7 @@ $('#back').onclick = e => { if (e.target.id === 'back') closeSheet(); };
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
 
 /* --------------------------------------------------------------- старт */
-(async function boot(){
-  try{
-    const info = await api('/session');
-    if (info.signedIn) return start();
-    loginMode(info.ready ? 'password' : 'setup');
-  }catch(ex){
-    if (ex.status === 503){
-      $('#pin-block').classList.add('hidden');
-      $('#key-block').classList.add('hidden');
-      showLoginError(
-        'Панель ещё не настроена. В Cloudflare, в проекте nogotok, раздел Settings → ' +
-        'Variables and Secrets (это раздел для работы сайта, не Build variables), ' +
-        'добавьте секрет с именем GITHUB_TOKEN и опубликуйте новую версию кнопкой Deploy. ' +
-        'Витрина магазина при этом работает как обычно.');
-    }else{
-      loginMode('setup');
-      showLoginError('Панель не смогла связаться с сервером: ' + ex.message);
-    }
-  }
-})();
+pickLoginMode();
+if (A.token){
+  start().catch(() => logout());
+}

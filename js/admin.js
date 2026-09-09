@@ -5,46 +5,10 @@ const $  = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money = n => new Intl.NumberFormat('ru-RU').format(Math.round(n || 0)) + ' ₽';
-const TOKEN_KEY = 'nogotok_gh_token';      // старый формат: ключ лежал открытым
-const LOCK_KEY  = 'nogotok_locked_key';    // ключ, закрытый кодом доступа
-const TRY_KEY   = 'nogotok_pin_tries';
-const MAX_TRIES = 10;
+const TOKEN_KEY = 'nogotok_gh_token';
 const SITE_URL = CFG.siteUrl || `https://${CFG.owner}.github.io/${CFG.repo}/`;
 
 const A = { token: '', user: null, db: null, sha: '', tab: 'products', filter: { q:'', cat:'' }, busy: false };
-
-const box = {
-  get(){ try{ return JSON.parse(localStorage.getItem(LOCK_KEY) || 'null'); }catch(e){ return null; } },
-  set(v){ try{ localStorage.setItem(LOCK_KEY, JSON.stringify(v)); }catch(e){} },
-  drop(){ try{ localStorage.removeItem(LOCK_KEY); localStorage.removeItem(TRY_KEY); }catch(e){} },
-  tries(){ return +(localStorage.getItem(TRY_KEY) || 0); },
-  bump(n){ try{ localStorage.setItem(TRY_KEY, String(n)); }catch(e){} },
-};
-
-/* ---------------------------------------- код доступа закрывает ключ GitHub */
-const ENC = new TextEncoder(), DEC = new TextDecoder();
-const toB64 = b => btoa(String.fromCharCode(...new Uint8Array(b)));
-const fromB64 = t => Uint8Array.from(atob(t), c => c.charCodeAt(0));
-
-async function pinKey(pin, salt){
-  const base = await crypto.subtle.importKey('raw', ENC.encode(pin), 'PBKDF2', false, ['deriveKey']);
-  return crypto.subtle.deriveKey(
-    { name:'PBKDF2', salt, iterations:250000, hash:'SHA-256' },
-    base, { name:'AES-GCM', length:256 }, false, ['encrypt','decrypt']);
-}
-async function lockToken(token, pin){
-  const salt = crypto.getRandomValues(new Uint8Array(16));
-  const iv   = crypto.getRandomValues(new Uint8Array(12));
-  const key  = await pinKey(pin, salt);
-  const data = await crypto.subtle.encrypt({ name:'AES-GCM', iv }, key, ENC.encode(token));
-  return { v:1, salt:toB64(salt), iv:toB64(iv), data:toB64(data) };
-}
-async function unlockToken(saved, pin){
-  const key = await pinKey(pin, fromB64(saved.salt));
-  const out = await crypto.subtle.decrypt({ name:'AES-GCM', iv: fromB64(saved.iv) }, key, fromB64(saved.data));
-  return DEC.decode(out);
-}
-const validPin = p => /^\d{4,12}$/.test(p);
 
 try{ A.token = localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY) || ''; }catch(e){}
 
@@ -183,13 +147,11 @@ function toast(text, bad){
   window.__t = setTimeout(() => t.classList.remove('show'), 3200);
 }
 
-function logout(forget){
+function logout(){
   try{ localStorage.removeItem(TOKEN_KEY); sessionStorage.removeItem(TOKEN_KEY); }catch(e){}
-  if (forget) box.drop();
   A.token = ''; A.db = null; A.user = null;
   $('#panel').classList.add('hidden');
   $('#login').classList.remove('hidden');
-  pickLoginMode();
 }
 
 /* ------------------------------------------------------------------ вход */
@@ -199,88 +161,34 @@ function showLoginError(text){
   err.style.display = text ? 'block' : 'none';
 }
 
-function pickLoginMode(){
-  const saved = box.get();
-  $('#pin-block').classList.toggle('hidden', !saved);
-  $('#key-block').classList.toggle('hidden', !!saved);
-  (saved ? $('#pin') : $('#password')).focus();
-}
-
-$('#use-key').onclick = e => {
-  e.preventDefault();
-  $('#pin-block').classList.add('hidden');
-  $('#key-block').classList.remove('hidden');
-  showLoginError('');
-  $('#password').focus();
-};
-
 $('#login-form').onsubmit = async e => {
   e.preventDefault();
-  const byKey = !$('#key-block').classList.contains('hidden');
-  const btn = e.submitter || $('#key-block button');
-  btn.disabled = true;
-  const label = btn.textContent;
-  btn.textContent = 'Проверяем…';
+  const btn = $('#login-btn');
+  const token = $('#password').value.trim();
+  if (!token) return showLoginError('Вставьте ключ доступа GitHub');
+  btn.disabled = true; btn.textContent = 'Проверяем ключ…';
   showLoginError('');
+  A.token = token;
   try{
-    await (byKey ? loginWithKey() : loginWithPin());
+    A.user = await gh('/user');
+    const repo = await gh(`/repos/${CFG.owner}/${CFG.repo}`);
+    if (repo.permissions && repo.permissions.push === false)
+      console.warn('Ключ выглядит как «только чтение» — сохранение может не пройти');
+    try{
+      const store = $('#remember').checked ? localStorage : sessionStorage;
+      store.setItem(TOKEN_KEY, token);
+    }catch(ex){}
+    $('#password').value = '';
+    await start();
   }catch(ex){
     A.token = '';
-    showLoginError(ex.message);
+    showLoginError(ex.status === 404
+      ? `Репозиторий ${CFG.owner}/${CFG.repo} не найден или ключ не даёт к нему доступа`
+      : ex.message);
   }finally{
-    btn.disabled = false; btn.textContent = label;
+    btn.disabled = false; btn.textContent = 'Войти';
   }
 };
-
-async function loginWithPin(){
-  const pin = $('#pin').value.trim();
-  const saved = box.get();
-  if (!saved) { pickLoginMode(); throw new Error('Ключ на этом устройстве не сохранён'); }
-  let token;
-  try{
-    token = await unlockToken(saved, pin);
-  }catch(ex){
-    const left = MAX_TRIES - (box.tries() + 1);
-    box.bump(box.tries() + 1);
-    if (left <= 0){
-      box.drop(); pickLoginMode();
-      throw new Error('Слишком много попыток. Сохранённый ключ удалён, войдите по ключу GitHub.');
-    }
-    throw new Error(`Неверный код. Осталось попыток: ${left}`);
-  }
-  A.token = token;
-  await checkAccess();
-  box.bump(0);
-  $('#pin').value = '';
-  await start();
-}
-
-async function loginWithKey(){
-  const token = $('#password').value.trim();
-  if (!token) throw new Error('Вставьте ключ доступа GitHub');
-  const pin = $('#newpin').value.trim();
-  const pin2 = $('#newpin2').value.trim();
-  if (pin || pin2){
-    if (pin !== pin2) throw new Error('Коды не совпадают');
-    if (!validPin(pin)) throw new Error('Код должен состоять из цифр, от 4 до 12 знаков');
-  }
-  A.token = token;
-  await checkAccess();
-  if (pin){
-    box.set(await lockToken(token, pin));
-    box.bump(0);
-    try{ localStorage.removeItem(TOKEN_KEY); sessionStorage.removeItem(TOKEN_KEY); }catch(e){}
-  }
-  $('#password').value = ''; $('#newpin').value = ''; $('#newpin2').value = '';
-  await start();
-}
-
-async function checkAccess(){
-  A.user = await gh('/user');
-  const repo = await gh(`/repos/${CFG.owner}/${CFG.repo}`);
-  if (repo.permissions && repo.permissions.push === false)
-    console.warn('Ключ выглядит как «только чтение» — сохранение может не пройти');
-}
 
 $('#help-link').onclick = e => {
   e.preventDefault();
@@ -291,13 +199,9 @@ $('#help-link').onclick = e => {
     '3. Generate new token. Имя любое, срок — на год.\n' +
     '4. Resource owner → ' + CFG.owner + ', Repository access → Only select repositories → ' + CFG.repo + '\n' +
     '5. Permissions → Repository permissions → Contents: Read and write\n' +
-    '6. Generate token и скопируйте строку, которая начинается на github_pat_\n\n' +
-    'Ключ нужен один раз на устройство. Дальше вход по коду доступа.'
+    '6. Generate token и скопируйте строку, которая начинается на github_pat_'
   );
 };
-
-$('#logout').onclick = e => { e.preventDefault(); logout(); };
-$$('#nav button').forEach(b => b.onclick = () => { A.tab = b.dataset.tab; render(); });
 
 async function start(){
   await loadDb();
@@ -767,23 +671,6 @@ function viewSecurity(){
     </div>
 
     <div class="card" style="max-width:600px">
-      <h3>Код доступа</h3>
-      <p class="hint" style="margin:0 0 16px">
-        Код заменяет длинный ключ GitHub при входе на этом устройстве. Ключ хранится здесь же,
-        но в зашифрованном виде: без кода его не прочитать. На другом устройстве код нужно задать заново.
-      </p>
-      <form id="pinf">
-        <div class="row2">
-          <div class="f"><label class="lbl">Новый код</label>
-            <input class="inp" type="password" name="pin" inputmode="numeric" maxlength="12" placeholder="8 цифр"></div>
-          <div class="f"><label class="lbl">Повторите код</label>
-            <input class="inp" type="password" name="pin2" inputmode="numeric" maxlength="12" placeholder="8 цифр"></div>
-        </div>
-        <button class="btn" type="submit">${box.get() ? 'Сменить код' : 'Установить код'}</button>
-      </form>
-    </div>
-
-    <div class="card" style="max-width:600px">
       <h3>Если ключ попал не в те руки</h3>
       <p class="hint" style="margin:0">
         Зайдите на github.com → Settings → Developer settings → Personal access tokens →
@@ -802,23 +689,8 @@ function viewSecurity(){
       <button class="btn ghost" id="backup">Скачать копию каталога</button>
     </div>`;
 
-  $('#drop-token').onclick = () => { if (confirm('Выйти и удалить ключ с этого устройства?')) logout(true); };
+  $('#drop-token').onclick = () => { if (confirm('Выйти и удалить ключ с этого устройства?')) logout(); };
 
-  $('#pinf').onsubmit = async e => {
-    e.preventDefault();
-    const f = e.target;
-    const pin = f.pin.value.trim(), pin2 = f.pin2.value.trim();
-    if (pin !== pin2) return toast('Коды не совпадают', true);
-    if (!validPin(pin)) return toast('Код — только цифры, от 4 до 12 знаков', true);
-    try{
-      box.set(await lockToken(A.token, pin));
-      box.bump(0);
-      try{ localStorage.removeItem(TOKEN_KEY); sessionStorage.removeItem(TOKEN_KEY); }catch(ex){}
-      f.reset();
-      toast('Код сохранён. Следующий вход — по нему');
-      viewSecurity();
-    }catch(ex){ toast('Не удалось сохранить код: ' + ex.message, true); }
-  };
   $('#backup').onclick = () => {
     const blob = new Blob([JSON.stringify(A.db, null, 2)], { type:'application/json' });
     const a = document.createElement('a');
@@ -843,7 +715,6 @@ $('#back').onclick = e => { if (e.target.id === 'back') closeSheet(); };
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
 
 /* --------------------------------------------------------------- старт */
-pickLoginMode();
 if (A.token){
   start().catch(() => logout());
 }

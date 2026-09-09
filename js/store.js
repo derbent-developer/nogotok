@@ -471,8 +471,8 @@ function addToCart(id, qty = 1){
   const line = S.cart.find(i => i.id === id);
   if (line) line.qty = Math.min(999, line.qty + qty);
   else S.cart.push({ id, qty });
-  saveCart(); updateCart(); toast(`«${p.title.slice(0,40)}…» в корзине`);
-  openDrawer();
+  saveCart(); updateCart();
+  toast(`«${p.title.slice(0,40)}…» в корзине`);
 }
 
 function setQty(id, qty){

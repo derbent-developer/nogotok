@@ -774,32 +774,6 @@
           "v": "Crunch Blade"
         }
       ]
-    },
-    {
-      "id": 29,
-      "title": "Ножницы парикмахерские 5.5\" прямые",
-      "slug": "nozhnicy-parikmaherskie-5-5-pryamye-29",
-      "brand": "Silver Star",
-      "category": "parikmaheram",
-      "price": 3000,
-      "oldPrice": 3400,
-      "unit": "шт",
-      "sku": "PR-002",
-      "badge": "",
-      "inStock": true,
-      "published": true,
-      "description": "Японская сталь 440C, регулировка винта, эргономичное кольцо.",
-      "images": [],
-      "specs": [
-        {
-          "k": "Размер",
-          "v": "5.5 дюйма"
-        },
-        {
-          "k": "Сталь",
-          "v": "440C"
-        }
-      ]
     }
   ]
 }

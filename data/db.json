@@ -37,78 +37,6 @@
         "link": "#/catalog",
         "bg": "#f4f0ee",
         "image": ""
-      },
-      {
-        "title": "Новый баннер",
-        "subtitle": "",
-        "button": "В каталог",
-        "link": "#/catalog",
-        "bg": "#f4f0ee",
-        "image": ""
-      },
-      {
-        "title": "Новый баннер",
-        "subtitle": "",
-        "button": "В каталог",
-        "link": "#/catalog",
-        "bg": "#f4f0ee",
-        "image": ""
-      },
-      {
-        "title": "Новый баннер",
-        "subtitle": "",
-        "button": "В каталог",
-        "link": "#/catalog",
-        "bg": "#f4f0ee",
-        "image": ""
-      },
-      {
-        "title": "Новый баннер",
-        "subtitle": "",
-        "button": "В каталог",
-        "link": "#/catalog",
-        "bg": "#f4f0ee",
-        "image": ""
-      },
-      {
-        "title": "2345235",
-        "subtitle": "",
-        "button": "В каталог",
-        "link": "#/catalog",
-        "bg": "#f4f0ee",
-        "image": ""
-      },
-      {
-        "title": "23423",
-        "subtitle": "",
-        "button": "В каталог",
-        "link": "#/catalog",
-        "bg": "#f4f0ee",
-        "image": ""
-      },
-      {
-        "title": "23423",
-        "subtitle": "",
-        "button": "В каталог",
-        "link": "#/catalog",
-        "bg": "#f4f0ee",
-        "image": ""
-      },
-      {
-        "title": "243523",
-        "subtitle": "",
-        "button": "В каталог",
-        "link": "#/catalog",
-        "bg": "#f4f0ee",
-        "image": ""
-      },
-      {
-        "title": "234y2",
-        "subtitle": "",
-        "button": "В каталог",
-        "link": "#/catalog",
-        "bg": "#f4f0ee",
-        "image": ""
       }
     ]
   },
@@ -824,11 +752,11 @@
     {
       "id": 28,
       "title": "Машинка для стрижки Wahl Magic Clip Cordless",
-      "slug": "mashinka-wahl-magic-clip-28",
+      "slug": "mashinka-dlya-strizhki-wahl-magic-clip-cordless-28",
       "brand": "Wahl",
       "category": "parikmaheram",
-      "price": 18900,
-      "oldPrice": 21500,
+      "price": 15000,
+      "oldPrice": 18900,
       "unit": "шт",
       "sku": "PR-001",
       "badge": "sale",

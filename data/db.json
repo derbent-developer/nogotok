@@ -774,6 +774,24 @@
           "v": "Crunch Blade"
         }
       ]
+    },
+    {
+      "id": 29,
+      "createdAt": "2026-09-14T17:50:39",
+      "title": "французские духи",
+      "slug": "francuzskie-duhi-29",
+      "brand": "De Marly",
+      "category": "odnorazovoe",
+      "sku": "",
+      "price": 28000,
+      "oldPrice": 32000,
+      "unit": "шт",
+      "badge": "",
+      "inStock": true,
+      "published": true,
+      "description": "терпкий, стойкий аромат для мужчин",
+      "images": [],
+      "specs": []
     }
   ]
 }

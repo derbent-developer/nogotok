@@ -808,28 +808,6 @@
           "v": "440C"
         }
       ]
-    },
-    {
-      "id": 31,
-      "title": "Стул мастера со спинкой и газлифтом",
-      "slug": "stul-mastera-31",
-      "brand": "Med-Mos",
-      "category": "mebel",
-      "price": 7900,
-      "oldPrice": 0,
-      "unit": "шт",
-      "sku": "MB-002",
-      "badge": "",
-      "inStock": true,
-      "published": true,
-      "description": "Регулировка высоты 45–60 см, мягкое сиденье, колёса не царапают пол.",
-      "images": [],
-      "specs": [
-        {
-          "k": "Высота",
-          "v": "45–60 см"
-        }
-      ]
     }
   ]
 }

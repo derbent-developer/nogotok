@@ -700,32 +700,6 @@
       ]
     },
     {
-      "id": 23,
-      "title": "Аппарат для УЗ-чистки лица Skin Scrubber",
-      "slug": "uz-chistka-lica-23",
-      "brand": "Beauty Line",
-      "category": "kosmetologiya",
-      "price": 5400,
-      "oldPrice": 0,
-      "unit": "шт",
-      "sku": "KS-001",
-      "badge": "new",
-      "inStock": true,
-      "published": true,
-      "description": "Ультразвуковая чистка, фонофорез и микромассаж. Аккумулятор, три режима.",
-      "images": [],
-      "specs": [
-        {
-          "k": "Режимы",
-          "v": "3"
-        },
-        {
-          "k": "Питание",
-          "v": "аккумулятор"
-        }
-      ]
-    },
-    {
       "id": 25,
       "title": "Перчатки нитриловые Benovy, 100 шт",
       "slug": "perchatki-benovy-25",

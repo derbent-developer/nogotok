@@ -726,32 +726,6 @@
       ]
     },
     {
-      "id": 24,
-      "title": "Лампа-лупа на струбцине, 5 диоптрий",
-      "slug": "lampa-lupa-24",
-      "brand": "Beauty Line",
-      "category": "kosmetologiya",
-      "price": 4300,
-      "oldPrice": 0,
-      "unit": "шт",
-      "sku": "KS-002",
-      "badge": "",
-      "inStock": true,
-      "published": true,
-      "description": "LED-подсветка по кругу, линза 125 мм, крепление к кушетке или столу.",
-      "images": [],
-      "specs": [
-        {
-          "k": "Увеличение",
-          "v": "5 диоптрий"
-        },
-        {
-          "k": "Крепление",
-          "v": "струбцина"
-        }
-      ]
-    },
-    {
       "id": 25,
       "title": "Перчатки нитриловые Benovy, 100 шт",
       "slug": "perchatki-benovy-25",

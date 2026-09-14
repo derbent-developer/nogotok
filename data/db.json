@@ -800,6 +800,24 @@
           "v": "440C"
         }
       ]
+    },
+    {
+      "id": 30,
+      "createdAt": "2026-09-14T17:32:42",
+      "title": "лрпоп",
+      "slug": "lrpop-30",
+      "brand": "",
+      "category": "apparaty",
+      "sku": "",
+      "price": 9787,
+      "oldPrice": 0,
+      "unit": "шт",
+      "badge": "",
+      "inStock": true,
+      "published": true,
+      "description": "",
+      "images": [],
+      "specs": []
     }
   ]
 }

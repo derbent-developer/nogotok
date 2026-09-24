@@ -90,6 +90,16 @@ h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-.02em}
   font-size:13px;font-weight:500;transition:.16s;background:#fff;
 }
 .megamenu-item:hover{border-color:var(--ink);transform:translateY(-2px)}
+.megamenu-item .tx{flex:1;min-width:0}
+.megamenu-item .tx small{display:block;color:var(--muted);font-size:11px;margin-top:3px;font-weight:400}
+.megamenu-item .arr{color:var(--muted);font-size:20px;line-height:1;flex:none}
+.megamenu-head{
+  grid-column:1/-1;display:flex;align-items:center;gap:16px;padding:0 4px 14px;margin-bottom:4px;
+  border-bottom:1px solid var(--line);
+}
+.megamenu-head button{font-size:13px;color:var(--muted)}
+.megamenu-head button:hover{color:var(--ink)}
+.megamenu-head b{font-size:13px;letter-spacing:.12em;text-transform:uppercase}
 .megamenu-item span.ic{
   width:38px;height:38px;border-radius:50%;background:var(--surface);display:grid;place-items:center;font-size:15px;flex:none;
 }
@@ -185,6 +195,19 @@ h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-.02em}
 .crumbs a:hover{color:var(--ink)}
 .page-title{font-size:34px;font-weight:700;margin:6px 0 4px}
 .page-sub{color:var(--muted);font-size:13px;margin-bottom:6px}
+.subcats{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 4px}
+.subcats a{
+  display:inline-flex;align-items:center;gap:8px;padding:9px 15px;border:1px solid var(--line);
+  border-radius:20px;font-size:13px;background:#fff;transition:.16s;
+}
+.subcats a:hover{border-color:var(--ink)}
+.subcats a.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.subcats a b{font-weight:600;color:var(--muted);font-size:11.5px}
+.subcats a.on b{color:rgba(255,255,255,.7)}
+.filters ul.checks{gap:11px}
+.filters ul.checks .check{font-size:13px}
+.filters li.sub a{padding-left:14px;font-size:12.5px;color:var(--muted)}
+.filters li.sub a:hover,.filters li.sub a.on{color:var(--accent)}
 .filters h4{font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin:26px 0 12px;color:var(--muted)}
 .filters ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
 .filters li a{font-size:13px;color:var(--ink-2);display:flex;justify-content:space-between;gap:8px}
@@ -343,7 +366,20 @@ h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-.02em}
   .btn.filter-toggle{display:inline-flex}
   .filters{display:none;border:1px solid var(--line);border-radius:var(--radius);padding:2px 20px 22px;margin-bottom:22px}
   .filters.is-open{display:grid;grid-template-columns:repeat(2,1fr);gap:0 26px}
-  .filters h4{margin-top:22px}
+  .subcats{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 4px}
+.subcats a{
+  display:inline-flex;align-items:center;gap:8px;padding:9px 15px;border:1px solid var(--line);
+  border-radius:20px;font-size:13px;background:#fff;transition:.16s;
+}
+.subcats a:hover{border-color:var(--ink)}
+.subcats a.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.subcats a b{font-weight:600;color:var(--muted);font-size:11.5px}
+.subcats a.on b{color:rgba(255,255,255,.7)}
+.filters ul.checks{gap:11px}
+.filters ul.checks .check{font-size:13px}
+.filters li.sub a{padding-left:14px;font-size:12.5px;color:var(--muted)}
+.filters li.sub a:hover,.filters li.sub a.on{color:var(--accent)}
+.filters h4{margin-top:22px}
 }
 
 @media (max-width:720px){
@@ -369,7 +405,17 @@ h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-.02em}
   .navbar .wrap{height:42px;gap:22px}
   .megamenu-panel{min-height:100%;padding:18px 0 30px}
   .megamenu-item{padding:13px 14px;font-size:12.5px}
-  .megamenu-item span.ic{width:32px;height:32px;font-size:13px}
+  .megamenu-item .tx{flex:1;min-width:0}
+.megamenu-item .tx small{display:block;color:var(--muted);font-size:11px;margin-top:3px;font-weight:400}
+.megamenu-item .arr{color:var(--muted);font-size:20px;line-height:1;flex:none}
+.megamenu-head{
+  grid-column:1/-1;display:flex;align-items:center;gap:16px;padding:0 4px 14px;margin-bottom:4px;
+  border-bottom:1px solid var(--line);
+}
+.megamenu-head button{font-size:13px;color:var(--muted)}
+.megamenu-head button:hover{color:var(--ink)}
+.megamenu-head b{font-size:13px;letter-spacing:.12em;text-transform:uppercase}
+.megamenu-item span.ic{width:32px;height:32px;font-size:13px}
 
   /* баннер */
   .hero{margin-top:0}
@@ -398,6 +444,9 @@ h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-.02em}
   .chip{font-size:9px;padding:3px 6px}
 
   /* каталог */
+  .subcats{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:14px -14px 0;padding:0 14px 4px}
+  .subcats::-webkit-scrollbar{display:none}
+  .subcats a{white-space:nowrap;flex:none}
   .crumbs{font-size:11.5px;padding:14px 0 4px}
   .page-title{font-size:23px}
   .page-sub{font-size:12.5px}

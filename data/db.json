@@ -38,6 +38,30 @@
         "bg": "#f4f0ee",
         "image": ""
       }
+    ],
+    "brands": [
+      "Barbara",
+      "Benovy",
+      "Brow Henna",
+      "CH",
+      "De Marly",
+      "Grattol",
+      "Kodi",
+      "Macro",
+      "Merz",
+      "Nail Pro",
+      "Silver Star",
+      "Strong",
+      "SUN",
+      "TOPRO",
+      "Ulka",
+      "VGT",
+      "Vivienne",
+      "Wahl",
+      "Zinger",
+      "Мастер",
+      "Спанбонд",
+      "Стерит"
     ]
   },
   "categories": [
@@ -47,7 +71,8 @@
       "slug": "apparaty",
       "icon": "⚙",
       "image": "",
-      "sort": 1
+      "sort": 1,
+      "parent": ""
     },
     {
       "id": 2,
@@ -55,7 +80,8 @@
       "slug": "manikyur",
       "icon": "✦",
       "image": "",
-      "sort": 2
+      "sort": 2,
+      "parent": ""
     },
     {
       "id": 3,
@@ -63,7 +89,8 @@
       "slug": "gel-laki",
       "icon": "◆",
       "image": "",
-      "sort": 3
+      "sort": 3,
+      "parent": ""
     },
     {
       "id": 4,
@@ -71,7 +98,8 @@
       "slug": "resnicy-brovi",
       "icon": "❋",
       "image": "",
-      "sort": 4
+      "sort": 4,
+      "parent": ""
     },
     {
       "id": 6,
@@ -79,7 +107,8 @@
       "slug": "parikmaheram",
       "icon": "✂",
       "image": "",
-      "sort": 6
+      "sort": 6,
+      "parent": ""
     },
     {
       "id": 7,
@@ -87,7 +116,8 @@
       "slug": "sterilizaciya",
       "icon": "✚",
       "image": "",
-      "sort": 7
+      "sort": 7,
+      "parent": ""
     },
     {
       "id": 8,
@@ -95,7 +125,89 @@
       "slug": "odnorazovoe",
       "icon": "▤",
       "image": "",
-      "sort": 8
+      "sort": 8,
+      "parent": ""
+    },
+    {
+      "id": 9,
+      "title": "Инструменты",
+      "slug": "instrumenty",
+      "icon": "✂",
+      "image": "",
+      "sort": 9,
+      "parent": ""
+    },
+    {
+      "id": 10,
+      "title": "Staleks",
+      "slug": "staleks",
+      "icon": "•",
+      "image": "",
+      "sort": 1,
+      "parent": "instrumenty"
+    },
+    {
+      "id": 11,
+      "title": "Tirnak",
+      "slug": "tirnak",
+      "icon": "•",
+      "image": "",
+      "sort": 2,
+      "parent": "instrumenty"
+    },
+    {
+      "id": 12,
+      "title": "YOKO",
+      "slug": "yoko",
+      "icon": "•",
+      "image": "",
+      "sort": 3,
+      "parent": "instrumenty"
+    },
+    {
+      "id": 13,
+      "title": "Nippon Nippers",
+      "slug": "nippon-nippers",
+      "icon": "•",
+      "image": "",
+      "sort": 4,
+      "parent": "instrumenty"
+    },
+    {
+      "id": 14,
+      "title": "Zinger",
+      "slug": "zinger-instrument",
+      "icon": "•",
+      "image": "",
+      "sort": 5,
+      "parent": "instrumenty"
+    },
+    {
+      "id": 15,
+      "title": "Фрезы",
+      "slug": "frezy",
+      "icon": "•",
+      "image": "",
+      "sort": 6,
+      "parent": "instrumenty"
+    },
+    {
+      "id": 16,
+      "title": "Колпачки и основы",
+      "slug": "kolpachki-osnovy",
+      "icon": "•",
+      "image": "",
+      "sort": 7,
+      "parent": "instrumenty"
+    },
+    {
+      "id": 17,
+      "title": "Тёрки для педикюра",
+      "slug": "terki-pedikyur",
+      "icon": "•",
+      "image": "",
+      "sort": 8,
+      "parent": "instrumenty"
     }
   ],
   "products": [

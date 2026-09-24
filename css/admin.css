@@ -124,6 +124,13 @@ textarea.inp{height:auto;min-height:96px;padding:11px 13px;resize:vertical;line-
 .st.work{background:#fff3e0;color:#b26a00}
 .st.done{background:#e8f6ee;color:var(--ok)}
 
+.brand-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.chip-row{display:inline-flex;align-items:center;gap:8px;padding:7px 8px 7px 13px;border:1px solid var(--line);
+  border-radius:20px;font-size:13px;background:#fff}
+.chip-row small{color:var(--muted);font-size:11px}
+.chip-row button{width:20px;height:20px;border-radius:50%;background:var(--surface);color:var(--muted);font-size:14px;line-height:1}
+.chip-row button:hover{background:var(--sale);color:#fff}
+
 .empty{padding:60px 20px;text-align:center;color:var(--muted);background:#fff;border:1px solid var(--line);border-radius:var(--radius)}
 .empty b{display:block;color:var(--ink);font-size:17px;margin-bottom:7px}
 .toast{position:fixed;left:50%;bottom:30px;transform:translate(-50%,16px);background:var(--ink);color:#fff;padding:13px 22px;

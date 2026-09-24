@@ -58,23 +58,81 @@ function paintChrome(){
   $('#f-hours').textContent = s.hours || '';
   $('#year').textContent = new Date().getFullYear();
 
-  const cats = S.categories;
+  const cats = visibleTop();
   $('#topnav').innerHTML =
-    cats.slice(0,8).map(c => `<a href="#/catalog/${c.slug}">${esc(c.title)}</a>`).join('') +
+    `<a href="#/brands">Все бренды</a>` +
+    cats.slice(0,7).map(c => `<a href="#/catalog/${c.slug}">${esc(c.title)}</a>`).join('') +
     `<a href="#/catalog?badge=sale" class="accent">Скидки</a><a href="#/delivery">Доставка</a>`;
 
-  $('#megamenu-grid').innerHTML = cats.map(c => `
-    <a class="megamenu-item" href="#/catalog/${c.slug}">
-      <span class="ic">${esc(c.icon || '✦')}</span>
-      <span>${esc(c.title)}<br><small style="color:var(--muted);font-size:11px">${countIn(c.slug)} ${plural(countIn(c.slug),'товар','товара','товаров')}</small></span>
-    </a>`).join('');
+  paintMega();
 
-  $('#f-cats').innerHTML = cats.slice(0,7)
+  $('#f-cats').innerHTML = `<li><a href="#/brands">Все бренды</a></li>` + cats.slice(0,6)
     .map(c => `<li><a href="#/catalog/${c.slug}">${esc(c.title)}</a></li>`).join('');
 }
 
-const countIn = slug => S.products.filter(p => p.category === slug).length;
-const catTitle = slug => (S.categories.find(c => c.slug === slug) || {}).title || 'Каталог';
+/* ------------------------------------------- категории, подгруппы, бренды */
+const catBySlug   = slug => S.categories.find(c => c.slug === slug) || null;
+const catTitle    = slug => (catBySlug(slug) || {}).title || 'Каталог';
+const childrenOf  = slug => S.categories.filter(c => c.parent === slug);
+const topCategories = () => S.categories.filter(c => !c.parent);
+
+/** Слаги самой категории и всех её подгрупп. */
+function branchSlugs(slug){
+  return [slug, ...childrenOf(slug).map(c => c.slug)];
+}
+
+/** Товары категории вместе с её подгруппами. */
+function productsOf(slug){
+  const branch = branchSlugs(slug);
+  return S.products.filter(p => branch.includes(p.category));
+}
+const countIn = slug => productsOf(slug).length;
+
+/** Меню каталога: верхний уровень, а у разделов с подгруппами — второй экран. */
+function paintMega(level = '', parent = ''){
+  const box = $('#megamenu-grid');
+  const line = (href, icon, title, note, arrow) => `
+    <a class="megamenu-item" href="${href}"${arrow ? ' data-drill="' + arrow + '"' : ''}>
+      <span class="ic">${esc(icon)}</span>
+      <span class="tx">${esc(title)}${note ? `<small>${esc(note)}</small>` : ''}</span>
+      ${arrow ? '<span class="arr">›</span>' : ''}
+    </a>`;
+
+  if (level === 'brands'){
+    box.innerHTML = `<div class="megamenu-head"><button data-mega-back>‹ Назад</button><b>Все бренды</b></div>` +
+      brandList().map(b => line(`#/brand/${encodeURIComponent(b)}`, '◆', b,
+        `${productsOfBrand(b).length} ${plural(productsOfBrand(b).length,'товар','товара','товаров')}`)).join('');
+    return;
+  }
+
+  if (level === 'cat'){
+    const cat = catBySlug(parent);
+    box.innerHTML = `<div class="megamenu-head"><button data-mega-back>‹ Назад</button><b>${esc(cat ? cat.title : '')}</b></div>` +
+      line(`#/catalog/${parent}`, '▤', 'Все товары раздела', `${countIn(parent)} ${plural(countIn(parent),'товар','товара','товаров')}`) +
+      visibleChildren(parent).map(c => line(`#/catalog/${c.slug}`, c.icon || '•', c.title,
+        `${countIn(c.slug)} ${plural(countIn(c.slug),'товар','товара','товаров')}`)).join('');
+    return;
+  }
+
+  box.innerHTML =
+    line('#/brands', '◆', 'Все бренды', `${brandList().length} ${plural(brandList().length,'бренд','бренда','брендов')}`, 'brands') +
+    visibleTop().map(c => {
+      const kids = visibleChildren(c.slug).length;
+      return line(`#/catalog/${c.slug}`, c.icon || '✦', c.title,
+        `${countIn(c.slug)} ${plural(countIn(c.slug),'товар','товара','товаров')}`,
+        kids ? 'cat:' + c.slug : '');
+    }).join('');
+}
+
+/** Пустые разделы покупателю не показываем. */
+const visibleTop = () => topCategories().filter(c => countIn(c.slug) > 0);
+const visibleChildren = slug => childrenOf(slug).filter(c => countIn(c.slug) > 0);
+
+const brandList = () => {
+  const inUse = new Set(S.products.map(p => (p.brand || '').trim()).filter(Boolean));
+  return [...inUse].sort((a, b) => a.localeCompare(b, 'ru'));
+};
+const productsOfBrand = brand => S.products.filter(p => (p.brand || '').trim() === brand);
 
 /* ------------------------------------------------------------- роутинг */
 function parseHash(){
@@ -89,6 +147,8 @@ function route(){
   closeMega();
   const page = parts[0] || 'home';
   if (page === 'home')     return renderHome();
+  if (page === 'brands')   return renderBrands();
+  if (page === 'brand')    return renderCatalog('', q, decodeURIComponent(parts[1] || ''));
   if (page === 'catalog')  return renderCatalog(parts[1] || '', q);
   if (page === 'product')  return renderProduct(parts[1]);
   if (page === 'contacts') return renderContacts();
@@ -192,7 +252,7 @@ function renderHome(){
     <section class="section">
       <div class="section-head"><h2>Категории</h2><a href="#/catalog">Весь каталог</a></div>
       <div class="tiles">
-        ${S.categories.map(c => `
+        ${visibleTop().map(c => `
           <a class="tile" href="#/catalog/${c.slug}">
             <span class="ic">${esc(c.icon||'✦')}</span>
             <span><b>${esc(c.title)}</b><small>${countIn(c.slug)} ${plural(countIn(c.slug),'товар','товара','товаров')}</small></span>
@@ -237,62 +297,149 @@ function initHero(count){
 }
 
 /* -------------------------------------------------------------- каталог */
-function renderCatalog(slug, q){
-  const query   = (q.get('q') || '').trim().toLowerCase();
-  const sort    = q.get('sort') || 'pop';
-  const min     = parseFloat(q.get('min')) || 0;
-  const max     = parseFloat(q.get('max')) || Infinity;
-  const onlyIn  = q.get('stock') === '1';
-  const brand   = q.get('brand') || '';
-  const badge   = q.get('badge') || '';
+/* Фильтры по характеристикам живут в адресе строкой вида
+   spec=Объём~15 мл~30 мл;Тип~База — так ссылку можно переслать. */
+function parseSpec(raw){
+  const out = {};
+  (raw || '').split(';').filter(Boolean).forEach(part => {
+    const [key, ...values] = part.split('~');
+    if (key && values.length) out[key] = values;
+  });
+  return out;
+}
+function buildSpec(obj){
+  return Object.entries(obj)
+    .filter(([, v]) => v && v.length)
+    .map(([k, v]) => [k, ...v].join('~'))
+    .join(';');
+}
+const specValues = p => {
+  const map = {};
+  (p.specs || []).forEach(x => { if (x.k && x.v) (map[x.k] = map[x.k] || []).push(x.v); });
+  return map;
+};
+function matchesSpec(p, filter){
+  const own = specValues(p);
+  return Object.entries(filter).every(([k, vals]) => (own[k] || []).some(v => vals.includes(v)));
+}
 
-  let list = S.products.slice();
-  if (slug)  list = list.filter(p => p.category === slug);
-  if (badge) list = list.filter(p => p.badge === badge || (badge==='sale' && p.oldPrice > p.price));
-  if (brand) list = list.filter(p => p.brand === brand);
+/**
+ * Каталог, раздел или бренд — одна и та же страница с разным охватом.
+ * scope: {type:'all'|'cat'|'brand', value}
+ */
+function renderCatalog(slug, q, brand){
+  const query  = (q.get('q') || '').trim().toLowerCase();
+  const sort   = q.get('sort') || 'pop';
+  const min    = parseFloat(q.get('min')) || 0;
+  const max    = parseFloat(q.get('max')) || Infinity;
+  const onlyIn = q.get('stock') === '1';
+  const badge  = q.get('badge') || '';
+  const picked = (q.get('brand') || '').split('~').filter(Boolean);
+  const spec   = parseSpec(q.get('spec'));
+
+  // охват: с чего начинаем отбор
+  const brandCat = brand ? (q.get('cat') || '') : '';
+  let scope = S.products.slice();
+  if (brand){
+    scope = productsOfBrand(brand);
+    if (brandCat) scope = scope.filter(p => branchSlugs(brandCat).includes(p.category));
+  }
+  else if (slug) scope = productsOf(slug);
+  if (badge) scope = scope.filter(p => p.badge === badge || (badge === 'sale' && p.oldPrice > p.price));
+  if (query) scope = scope.filter(p =>
+    (p.title + ' ' + (p.brand||'') + ' ' + (p.description||'') + ' ' + (p.sku||'')).toLowerCase().includes(query));
+
+  let list = scope.slice();
+  if (picked.length) list = list.filter(p => picked.includes((p.brand || '').trim()));
   if (onlyIn) list = list.filter(p => p.inStock);
   list = list.filter(p => p.price >= min && p.price <= max);
-  if (query) list = list.filter(p =>
-    (p.title + ' ' + p.brand + ' ' + p.description + ' ' + p.sku).toLowerCase().includes(query));
+  list = list.filter(p => matchesSpec(p, spec));
 
   const sorters = {
-    pop:      (a,b) => (b.badge==='hit') - (a.badge==='hit') || a.id - b.id,
-    price_asc:(a,b) => a.price - b.price,
-    price_desc:(a,b)=> b.price - a.price,
-    name:     (a,b) => a.title.localeCompare(b.title,'ru'),
-    new:      (a,b) => b.id - a.id,
+    pop:       (a,b) => (b.badge==='hit') - (a.badge==='hit') || a.id - b.id,
+    price_asc: (a,b) => a.price - b.price,
+    price_desc:(a,b) => b.price - a.price,
+    name:      (a,b) => a.title.localeCompare(b.title,'ru'),
+    new:       (a,b) => b.id - a.id,
   };
   list.sort(sorters[sort] || sorters.pop);
 
-  const scope = slug ? S.products.filter(p => p.category === slug) : S.products;
-  const brands = [...new Set(scope.map(p => p.brand).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ru'));
-  const title = query ? `Поиск: «${esc(query)}»` : (slug ? catTitle(slug) : (badge==='sale' ? 'Скидки и акции' : 'Весь каталог'));
+  // из чего собрать фильтры
+  const brandsHere = [...new Set(scope.map(p => (p.brand || '').trim()).filter(Boolean))]
+    .sort((a,b) => a.localeCompare(b,'ru'));
+  const facets = {};
+  scope.forEach(p => (p.specs || []).forEach(x => {
+    if (!x.k || !x.v) return;
+    (facets[x.k] = facets[x.k] || new Set()).add(x.v);
+  }));
+  const facetList = Object.entries(facets)
+    .map(([k, set]) => [k, [...set].sort((a,b) => a.localeCompare(b,'ru',{numeric:true}))])
+    .filter(([, vals]) => vals.length > 1)
+    .sort((a,b) => b[1].length - a[1].length)
+    .slice(0, 6);
 
-  const active = [brand, onlyIn ? '1' : '', badge, min ? '1' : '', isFinite(max) ? '1' : ''].filter(Boolean).length;
-
+  const base = brand ? '#/brand/' + encodeURIComponent(brand) : '#/catalog' + (slug ? '/' + slug : '');
   const link = extra => {
-    const p = new URLSearchParams(q.toString());
-    Object.entries(extra).forEach(([k,v]) => v === null || v === '' ? p.delete(k) : p.set(k,v));
-    const s = p.toString();
-    return '#/catalog' + (slug ? '/'+slug : '') + (s ? '?'+s : '');
+    const params = new URLSearchParams(q.toString());
+    Object.entries(extra).forEach(([k,v]) => (v === null || v === '') ? params.delete(k) : params.set(k,v));
+    const tail = params.toString();
+    return base + (tail ? '?' + tail : '');
   };
+  const toggleValue = (list, value) =>
+    list.includes(value) ? list.filter(x => x !== value) : [...list, value];
+
+  const title = query ? `Поиск: «${esc(query)}»`
+    : brand ? esc(brand)
+    : slug ? esc(catTitle(slug))
+    : (badge === 'sale' ? 'Скидки и акции' : 'Весь каталог');
+
+  const kids = slug ? visibleChildren(slug) : [];
+  const brandCats = brand
+    ? [...new Set(productsOfBrand(brand).map(p => p.category))]
+        .map(catBySlug).filter(Boolean)
+    : [];
+
+  const activeCount = picked.length + Object.keys(spec).length +
+    (onlyIn ? 1 : 0) + (min ? 1 : 0) + (isFinite(max) ? 1 : 0);
+
+  const crumbs = brand
+    ? `<a href="#/">Главная</a> / <a href="#/brands">Все бренды</a> / <span>${esc(brand)}</span>`
+    : slug
+      ? `<a href="#/">Главная</a> / <a href="#/catalog">Каталог</a>${
+          catBySlug(slug) && catBySlug(slug).parent
+            ? ` / <a href="#/catalog/${esc(catBySlug(slug).parent)}">${esc(catTitle(catBySlug(slug).parent))}</a>` : ''
+        } / <span>${esc(catTitle(slug))}</span>`
+      : `<a href="#/">Главная</a> / <span>Каталог</span>`;
 
   $('#app').innerHTML = `
   <div class="wrap">
-    <div class="crumbs"><a href="#/">Главная</a> / <a href="#/catalog">Каталог</a>${slug ? ' / <span>'+esc(catTitle(slug))+'</span>' : ''}</div>
+    <div class="crumbs">${crumbs}</div>
     <h1 class="page-title">${title}</h1>
     <div class="page-sub">${list.length} ${plural(list.length,'товар','товара','товаров')} · цены действительны при заказе через сайт</div>
-    <button class="btn sm ghost filter-toggle" id="f-toggle">Фильтры${active ? `<span class="n">${active}</span>` : ''}</button>
+
+    ${kids.length ? `<div class="subcats">${kids.map(c =>
+      `<a href="#/catalog/${c.slug}">${esc(c.title)} <b>${countIn(c.slug)}</b></a>`).join('')}</div>` : ''}
+    ${brandCats.length > 1 ? `<div class="subcats">
+      <a href="${link({cat:null})}" class="${brandCat?'':'on'}">Все товары бренда <b>${productsOfBrand(brand).length}</b></a>
+      ${brandCats.map(c =>
+      `<a href="${link({cat:c.slug})}" class="${brandCat===c.slug?'on':''}">${esc(c.title)} <b>${productsOfBrand(brand).filter(p=>p.category===c.slug).length}</b></a>`).join('')}</div>` : ''}
+
+    <button class="btn sm ghost filter-toggle" id="f-toggle">Фильтры${activeCount ? `<span class="n">${activeCount}</span>` : ''}</button>
 
     <div class="catalog">
       <aside class="filters">
-        <div>
+        ${brand ? '' : `<div>
           <h4>Категории</h4>
           <ul>
             <li><a href="#/catalog" class="${slug?'':'on'}">Все категории <small>${S.products.length}</small></a></li>
-            ${S.categories.map(c => `<li><a href="#/catalog/${c.slug}" class="${slug===c.slug?'on':''}">${esc(c.title)} <small>${countIn(c.slug)}</small></a></li>`).join('')}
+            ${visibleTop().map(c => `
+              <li><a href="#/catalog/${c.slug}" class="${slug===c.slug?'on':''}">${esc(c.title)} <small>${countIn(c.slug)}</small></a></li>
+              ${visibleChildren(c.slug).map(k => `
+                <li class="sub"><a href="#/catalog/${k.slug}" class="${slug===k.slug?'on':''}">${esc(k.title)} <small>${countIn(k.slug)}</small></a></li>`).join('')}
+            `).join('')}
           </ul>
-        </div>
+        </div>`}
+
         <div>
           <h4>Цена, ₽</h4>
           <div class="price-row">
@@ -301,18 +448,34 @@ function renderCatalog(slug, q){
           </div>
           <button class="btn sm ghost" id="f-apply" style="margin-top:10px;width:100%">Применить</button>
         </div>
-        ${brands.length>1?`<div>
+
+        ${brandsHere.length > 1 ? `<div>
           <h4>Бренд</h4>
-          <ul>
-            <li><a href="${link({brand:null})}" class="${brand?'':'on'}">Все бренды</a></li>
-            ${brands.map(b => `<li><a href="${link({brand:b})}" class="${brand===b?'on':''}">${esc(b)}</a></li>`).join('')}
+          <ul class="checks">
+            ${brandsHere.map(b => `
+              <li><label class="check">
+                <input type="checkbox" data-brand="${esc(b)}" ${picked.includes(b)?'checked':''}>
+                <span>${esc(b)}</span></label></li>`).join('')}
           </ul>
-        </div>`:''}
+        </div>` : ''}
+
+        ${facetList.map(([key, vals]) => `<div>
+          <h4>${esc(key)}</h4>
+          <ul class="checks">
+            ${vals.map(v => `
+              <li><label class="check">
+                <input type="checkbox" data-spec="${esc(key)}" data-val="${esc(v)}" ${(spec[key]||[]).includes(v)?'checked':''}>
+                <span>${esc(v)}</span></label></li>`).join('')}
+          </ul>
+        </div>`).join('')}
+
         <div>
           <h4>Наличие</h4>
-          <label class="check"><input type="checkbox" id="f-stock" ${onlyIn?'checked':''}> Только в наличии</label>
-          <label class="check" style="margin-top:10px"><input type="checkbox" id="f-sale" ${badge==='sale'?'checked':''}> Со скидкой</label>
+          <label class="check"><input type="checkbox" id="f-stock" ${onlyIn?'checked':''}> <span>Только в наличии</span></label>
+          <label class="check" style="margin-top:10px"><input type="checkbox" id="f-sale" ${badge==='sale'?'checked':''}> <span>Со скидкой</span></label>
         </div>
+
+        ${activeCount ? `<a class="btn sm ghost" style="margin-top:22px;width:100%" href="${base}">Сбросить фильтры</a>` : ''}
       </aside>
 
       <section>
@@ -328,7 +491,7 @@ function renderCatalog(slug, q){
         </div>
         ${list.length
           ? `<div class="grid">${list.map(cardHTML).join('')}</div>`
-          : `<div class="empty"><b>Ничего не нашли</b>Попробуйте изменить фильтры или напишите нам в WhatsApp — привезём под заказ.</div>`}
+          : `<div class="empty"><b>Ничего не нашли</b>Попробуйте снять часть фильтров или напишите нам в WhatsApp — привезём под заказ.</div>`}
       </section>
     </div>
   </div>`;
@@ -336,14 +499,47 @@ function renderCatalog(slug, q){
   const toggle = $('#f-toggle');
   toggle.onclick = () => {
     const open = $('.filters').classList.toggle('is-open');
-    toggle.innerHTML = (open ? 'Скрыть фильтры' : 'Фильтры') + (active ? `<span class="n">${active}</span>` : '');
+    toggle.innerHTML = (open ? 'Скрыть фильтры' : 'Фильтры') + (activeCount ? `<span class="n">${activeCount}</span>` : '');
   };
-  if (active) $('.filters').classList.add('is-open');
+  if (activeCount) $('.filters').classList.add('is-open');
 
   $('#f-sort').onchange  = e => location.hash = link({ sort: e.target.value });
   $('#f-stock').onchange = e => location.hash = link({ stock: e.target.checked ? '1' : null });
   $('#f-sale').onchange  = e => location.hash = link({ badge: e.target.checked ? 'sale' : null });
   $('#f-apply').onclick  = () => location.hash = link({ min: $('#f-min').value, max: $('#f-max').value });
+
+  $$('[data-brand]').forEach(box => box.onchange = () => {
+    const next = toggleValue(picked, box.dataset.brand);
+    location.hash = link({ brand: next.join('~') || null });
+  });
+
+  $$('[data-spec]').forEach(box => box.onchange = () => {
+    const key = box.dataset.spec, val = box.dataset.val;
+    const next = { ...spec, [key]: toggleValue(spec[key] || [], val) };
+    if (!next[key].length) delete next[key];
+    location.hash = link({ spec: buildSpec(next) || null });
+  });
+}
+
+/* ------------------------------------------------------------- бренды */
+function renderBrands(){
+  const brands = brandList();
+  $('#app').innerHTML = `
+  <div class="wrap">
+    <div class="crumbs"><a href="#/">Главная</a> / <span>Все бренды</span></div>
+    <h1 class="page-title">Все бренды</h1>
+    <div class="page-sub">${brands.length} ${plural(brands.length,'бренд','бренда','брендов')} в наличии и под заказ</div>
+    ${brands.length ? `<div class="tiles" style="margin-top:22px">
+      ${brands.map(b => {
+        const n = productsOfBrand(b).length;
+        return `<a class="tile" href="#/brand/${encodeURIComponent(b)}">
+          <span class="ic">◆</span>
+          <span><b>${esc(b)}</b><small>${n} ${plural(n,'товар','товара','товаров')}</small></span>
+        </a>`;
+      }).join('')}
+    </div>` : `<div class="empty"><b>Брендов пока нет</b>Они появятся, когда в каталог добавят товары.</div>`}
+    ${uspHTML()}
+  </div>`;
 }
 
 function plural(n, one, few, many){
@@ -705,16 +901,29 @@ document.addEventListener('click', e => {
     setQty(id, cartQty(id) - 1);
   }
 
-  if (e.target.closest('.megamenu-item')) closeMega();
+  const item = e.target.closest('.megamenu-item');
+  if (item && !item.dataset.drill) closeMega();   // пункты с подгруппами меню не закрывают
 });
 
 $('#burger').onclick = () => {
   const menu = $('#megamenu');
   menu.style.top = Math.round($('.header').getBoundingClientRect().bottom) + 'px';
+  if (!menu.classList.contains('open')) paintMega();
   menu.classList.toggle('open');
   document.body.classList.toggle('scroll-lock', menu.classList.contains('open'));
 };
-$('#megamenu').onclick = e => { if (e.target.id === 'megamenu') closeMega(); };
+$('#megamenu').onclick = e => {
+  if (e.target.id === 'megamenu') return closeMega();
+  const back = e.target.closest('[data-mega-back]');
+  if (back){ e.preventDefault(); return paintMega(); }
+  const drill = e.target.closest('[data-drill]');
+  if (drill){
+    e.preventDefault();
+    const [level, parent] = drill.dataset.drill.split(':');
+    paintMega(level, parent || '');
+    $('.megamenu-panel').scrollTop = 0;
+  }
+};
 $('#open-cart').onclick = openDrawer;
 $('#close-cart').onclick = closeDrawer;
 $('#drawer-back').onclick = closeDrawer;

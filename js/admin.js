@@ -316,7 +316,11 @@ function editProduct(p){
             ${A.db.categories.map(c => `<option value="${esc(c.slug)}" ${d.category===c.slug?'selected':''}>${esc(c.title)}</option>`).join('')}
           </select></div>
         <div class="f"><label class="lbl">Бренд</label>
-          <input class="inp" name="brand" value="${esc(d.brand||'')}" placeholder="Strong"></div>
+          <input class="inp" name="brand" value="${esc(d.brand||'')}" placeholder="Strong" list="brand-list" autocomplete="off">
+          <datalist id="brand-list">
+            ${(A.db.settings.brands || []).map(b => `<option value="${esc(b)}"></option>`).join('')}
+          </datalist>
+          <div class="hint">Список брендов редактируется в настройках</div></div>
         <div class="f"><label class="lbl">Артикул</label>
           <input class="inp" name="sku" value="${esc(d.sku||'')}" placeholder="AP-001"></div>
       </div>
@@ -433,6 +437,15 @@ function editProduct(p){
     });
     if (isNew) A.db.products.push(target);
 
+    const brand = target.brand.trim();
+    if (brand){
+      A.db.settings.brands = A.db.settings.brands || [];
+      if (!A.db.settings.brands.includes(brand)){
+        A.db.settings.brands.push(brand);
+        A.db.settings.brands.sort((x,y) => x.toLowerCase().localeCompare(y.toLowerCase(), 'ru'));
+      }
+    }
+
     $('#save').disabled = true; $('#save').textContent = 'Публикуем…';
     try{
       await saveDb((isNew ? 'Новый товар: ' : 'Изменён товар: ') + title);
@@ -449,25 +462,37 @@ function editProduct(p){
 /* ---------------------------------------------------------- категории */
 function viewCategories(){
   const cats = A.db.categories;
+  const tops = cats.filter(c => !c.parent).sort((a,b) => (a.sort||0)-(b.sort||0) || a.id-b.id);
+  const kidsOf = slug => cats.filter(c => c.parent === slug).sort((a,b) => (a.sort||0)-(b.sort||0) || a.id-b.id);
+  const own = slug => A.db.products.filter(p => p.category === slug).length;
+  const total = c => own(c.slug) + kidsOf(c.slug).reduce((n,k) => n + own(k.slug), 0);
+
+  const row = (c, isChild) => {
+    const n = isChild ? own(c.slug) : total(c);
+    return `<tr>
+      <td><div class="cellname">
+        <div class="thumb" style="font-size:17px">${isChild ? '•' : esc(c.icon||'✦')}</div>
+        <div><b>${isChild ? '<span style="color:var(--muted)">└ </span>' : ''}${esc(c.title)}</b>
+          <small>${isChild ? 'подгруппа' : (kidsOf(c.slug).length ? kidsOf(c.slug).length + ' подгрупп' : 'раздел')}</small></div>
+      </div></td>
+      <td><small style="color:var(--muted)">#/catalog/${esc(c.slug)}</small></td>
+      <td>${n}${n === 0 ? '<br><small style="color:var(--muted)">на сайте не видна</small>' : ''}</td>
+      <td>${c.sort||0}</td>
+      <td><div class="acts">
+        <button class="btn sm ghost" data-cedit="${c.id}">Изменить</button>
+        <button class="btn sm danger" data-cdel="${c.id}">Удалить</button>
+      </div></td></tr>`;
+  };
+
   $('#view').innerHTML = `
     <div class="topline">
-      <div><h1>Категории</h1><p>Порядок в меню задаётся полем «Сортировка»</p></div>
+      <div><h1>Категории</h1><p>Разделы и подгруппы каталога. Пустые разделы покупателю не показываются</p></div>
       <div class="tools"><button class="btn" id="c-add">+ Добавить категорию</button></div>
     </div>
     ${cats.length ? `<table class="table">
-      <thead><tr><th>Категория</th><th>Ссылка</th><th>Товаров</th><th>Сортировка</th><th></th></tr></thead>
-      <tbody>${cats.map(c => {
-        const n = A.db.products.filter(p => p.category === c.slug).length;
-        return `<tr>
-          <td><div class="cellname"><div class="thumb" style="font-size:17px">${esc(c.icon||'✦')}</div><div><b>${esc(c.title)}</b></div></div></td>
-          <td><small style="color:var(--muted)">#/catalog/${esc(c.slug)}</small></td>
-          <td>${n}</td>
-          <td>${c.sort||0}</td>
-          <td><div class="acts">
-            <button class="btn sm ghost" data-cedit="${c.id}">Изменить</button>
-            <button class="btn sm danger" data-cdel="${c.id}">Удалить</button>
-          </div></td></tr>`;
-      }).join('')}</tbody></table>`
+      <thead><tr><th>Название</th><th>Ссылка</th><th>Товаров</th><th>Сортировка</th><th></th></tr></thead>
+      <tbody>${tops.map(c => row(c, false) + kidsOf(c.slug).map(k => row(k, true)).join('')).join('')}</tbody>
+    </table>`
     : `<div class="empty"><b>Категорий нет</b>Добавьте хотя бы одну, чтобы раскладывать товары.</div>`}`;
 
   $('#c-add').onclick = () => editCategory(null);
@@ -476,6 +501,7 @@ function viewCategories(){
     const c = cats.find(x => x.id == b.dataset.cdel);
     const n = A.db.products.filter(p => p.category === c.slug).length;
     if (n) return toast(`В категории ${n} товаров — сначала перенесите их`, true);
+    if (kidsOf(c.slug).length) return toast('Сначала удалите или перенесите подгруппы', true);
     if (!confirm(`Удалить категорию «${c.title}»?`)) return;
     const backup = A.db.categories.slice();
     A.db.categories = A.db.categories.filter(x => x.id != c.id);
@@ -488,12 +514,21 @@ function viewCategories(){
 
 function editCategory(c){
   const isNew = !c;
-  const d = c || { icon:'✦', sort: A.db.categories.length + 1 };
+  const d = c || { icon:'✦', parent:'', sort: A.db.categories.length + 1 };
   openSheet(`
     <h2>${isNew ? 'Новая категория' : 'Категория'}</h2>
     <form id="cf">
       <div class="f"><label class="lbl">Название *</label>
         <input class="inp" name="title" value="${esc(d.title||'')}" placeholder="Аппараты и техника"></div>
+      <div class="f"><label class="lbl">Внутри раздела</label>
+        <select class="inp" name="parent">
+          <option value="">— самостоятельный раздел —</option>
+          ${A.db.categories.filter(x => !x.parent && x.slug !== d.slug).map(x =>
+            `<option value="${esc(x.slug)}" ${d.parent === x.slug ? 'selected' : ''}>${esc(x.title)}</option>`).join('')}
+        </select>
+        <div class="hint">Выберите раздел, если это подгруппа. Подгруппы второго уровня не поддерживаются</div>
+      </div>
+
       <div class="row3">
         <div class="f"><label class="lbl">Ссылка (латиницей)</label>
           <input class="inp" name="slug" value="${esc(d.slug||'')}" placeholder="apparaty">
@@ -515,9 +550,12 @@ function editCategory(c){
     const title = f.title.value.trim();
     if (!title) return toast('Введите название категории', true);
     const target = isNew ? { id: nextId(A.db.categories) } : A.db.categories.find(x => x.id == d.id);
+    const parent = f.parent.value;
+    const hasKids = A.db.categories.some(x => x.parent === (d.slug || ''));
+    if (parent && hasKids) return toast('У этой категории есть подгруппы, она не может быть вложенной', true);
     Object.assign(target, {
       title, slug: (f.slug.value.trim() || slugify(title)),
-      icon: f.icon.value.trim() || '✦', sort: +f.sort.value || 0,
+      icon: f.icon.value.trim() || '✦', sort: +f.sort.value || 0, parent,
     });
     if (isNew) A.db.categories.push(target);
     A.db.categories.sort((a,b) => (a.sort||0) - (b.sort||0) || a.id - b.id);
@@ -595,11 +633,41 @@ function viewSettings(){
       </div>
 
       <div class="card">
+        <h3>Бренды магазина</h3>
+        <p class="hint" style="margin:0 0 14px">
+          Из этого списка бренд подставляется при добавлении товара. На сайте в разделе
+          «Все бренды» показываются только те, у которых есть товары.
+        </p>
+        <div id="brands"></div>
+        <div class="row2" style="align-items:end">
+          <div class="f" style="margin:0"><label class="lbl">Новый бренд</label>
+            <input class="inp" id="brand-new" placeholder="Zinger"></div>
+          <div class="f" style="margin:0"><button type="button" class="btn ghost" id="brand-add">Добавить бренд</button></div>
+        </div>
+      </div>
+
+      <div class="card">
         <h3>Баннеры на главной</h3>
         <div id="slides"></div>
         <button type="button" class="btn sm ghost" id="slide-add">+ Добавить баннер</button>
       </div>
     </form>`;
+
+  let brands = [...(s.brands || [])];
+  const paintBrands = () => {
+    const used = b => A.db.products.filter(p => (p.brand||'').trim() === b).length;
+    $('#brands').innerHTML = brands.length
+      ? `<div class="brand-chips">${brands.map((b,i) => `
+          <span class="chip-row">${esc(b)}<small>${used(b)}</small>
+            <button type="button" data-brm="${i}" title="Убрать из списка">×</button></span>`).join('')}</div>`
+      : '<div class="hint">Список пуст. Бренд можно вписать прямо в карточке товара.</div>';
+    $$('[data-brm]').forEach(b => b.onclick = () => {
+      const name = brands[+b.dataset.brm];
+      const n = A.db.products.filter(p => (p.brand||'').trim() === name).length;
+      if (n) return toast(`«${name}» стоит у ${n} товаров, сначала смените бренд у них`, true);
+      brands.splice(+b.dataset.brm, 1); paintBrands();
+    });
+  };
 
   let list = (s.heroSlides || []).map(x => ({ ...x }));
 
@@ -640,6 +708,17 @@ function viewSettings(){
     });
   };
   paint();
+  paintBrands();
+
+  $('#brand-add').onclick = () => {
+    const name = $('#brand-new').value.trim();
+    if (!name) return;
+    if (brands.some(b => b.toLowerCase() === name.toLowerCase())) return toast('Такой бренд уже есть', true);
+    brands.push(name);
+    brands.sort((x,y) => x.toLowerCase().localeCompare(y.toLowerCase(), 'ru'));
+    $('#brand-new').value = '';
+    paintBrands();
+  };
 
   $('#slide-add').onclick = () => { list.push({ title:'Новый баннер', subtitle:'', button:'В каталог', link:'#/catalog', bg:'#f4f0ee', image:'' }); paint(); };
 
@@ -651,6 +730,7 @@ function viewSettings(){
     A.db.settings.whatsapp = A.db.settings.whatsapp.replace(/\D/g,'');
     A.db.settings.freeDeliveryFrom = +f.freeDeliveryFrom.value || 0;
     A.db.settings.heroSlides = list;
+    A.db.settings.brands = brands;
     $('#s-save').disabled = true;
     try{
       await saveDb('Обновлены настройки магазина');

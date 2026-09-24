@@ -411,6 +411,89 @@ function renderCatalog(slug, q, brand){
         } / <span>${esc(catTitle(slug))}</span>`
       : `<a href="#/">Главная</a> / <span>Каталог</span>`;
 
+  // границы цены берём из охвата, чтобы ползунок не упирался в пустоту
+  const prices = scope.map(p => p.price);
+  const lowest  = prices.length ? Math.floor(Math.min(...prices)) : 0;
+  const highest = prices.length ? Math.ceil(Math.max(...prices)) : 0;
+  const fromVal = min || lowest;
+  const toVal   = isFinite(max) ? max : highest;
+
+  /** Группа галочек: длинные списки прячем под «Ещё варианты». */
+  const checkGroup = (title, items, limit = 5) => {
+    const hidden = items.length > limit;
+    return `<div class="fgroup">
+      <h4>${esc(title)}</h4>
+      <ul class="checks">
+        ${items.map((it, i) => `
+          <li${hidden && i >= limit ? ' class="more hidden"' : ''}>
+            <label class="check">
+              <input type="checkbox" ${it.attrs} ${it.checked ? 'checked' : ''}>
+              <span>${esc(it.label)}</span>
+            </label>
+          </li>`).join('')}
+      </ul>
+      ${hidden ? `<button type="button" class="more-link" data-more>Ещё варианты</button>` : ''}
+    </div>`;
+  };
+
+  const filtersHTML = `
+    <div class="filters-head">
+      <b>Фильтр товаров</b>
+      <button type="button" id="f-close" aria-label="Закрыть">×</button>
+    </div>
+
+    <div class="filters-body">
+      <div class="fgroup">
+        <h4>Поиск в разделе</h4>
+        <input class="finput" type="search" id="f-query" value="${esc(q.get('q') || '')}" placeholder="Название или артикул">
+      </div>
+
+      ${brand ? '' : `<div class="fgroup">
+        <h4>Категории</h4>
+        <ul>
+          <li><a href="#/catalog" class="${slug?'':'on'}">Все категории <small>${S.products.length}</small></a></li>
+          ${visibleTop().map(c => `
+            <li><a href="#/catalog/${c.slug}" class="${slug===c.slug?'on':''}">${esc(c.title)} <small>${countIn(c.slug)}</small></a></li>
+            ${visibleChildren(c.slug).map(k => `
+              <li class="sub"><a href="#/catalog/${k.slug}" class="${slug===k.slug?'on':''}">${esc(k.title)} <small>${countIn(k.slug)}</small></a></li>`).join('')}
+          `).join('')}
+        </ul>
+      </div>`}
+
+      ${highest > lowest ? `<div class="fgroup">
+        <h4>Цена, ₽</h4>
+        <div class="range">
+          <div class="range-vals"><span id="r-from">${money(fromVal)}</span><span id="r-to">${money(toVal)}</span></div>
+          <div class="range-track"><span class="range-fill" id="r-fill"></span>
+            <input type="range" id="r-min" min="${lowest}" max="${highest}" value="${fromVal}">
+            <input type="range" id="r-max" min="${lowest}" max="${highest}" value="${toVal}">
+          </div>
+        </div>
+      </div>` : ''}
+
+      ${brandsHere.length > 1 ? checkGroup('Бренд', brandsHere.map(b => ({
+        label: b, checked: picked.includes(b), attrs: `data-brand="${esc(b)}"`,
+      }))) : ''}
+
+      ${facetList.map(([key, vals]) => checkGroup(key, vals.map(v => ({
+        label: v, checked: (spec[key]||[]).includes(v),
+        attrs: `data-spec="${esc(key)}" data-val="${esc(v)}"`,
+      })))).join('')}
+
+      <div class="fgroup">
+        <h4>Наличие</h4>
+        <ul class="checks">
+          <li><label class="check"><input type="checkbox" id="f-stock" ${onlyIn?'checked':''}> <span>Только в наличии</span></label></li>
+          <li><label class="check"><input type="checkbox" id="f-sale" ${badge==='sale'?'checked':''}> <span>Со скидкой</span></label></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="filters-foot">
+      <button type="button" class="btn ghost" id="f-reset">Сбросить</button>
+      <button type="button" class="btn" id="f-apply">Применить</button>
+    </div>`;
+
   $('#app').innerHTML = `
   <div class="wrap">
     <div class="crumbs">${crumbs}</div>
@@ -424,101 +507,125 @@ function renderCatalog(slug, q, brand){
       ${brandCats.map(c =>
       `<a href="${link({cat:c.slug})}" class="${brandCat===c.slug?'on':''}">${esc(c.title)} <b>${productsOfBrand(brand).filter(p=>p.category===c.slug).length}</b></a>`).join('')}</div>` : ''}
 
-    <button class="btn sm ghost filter-toggle" id="f-toggle">Фильтры${activeCount ? `<span class="n">${activeCount}</span>` : ''}</button>
+    <div class="toolbar">
+      <button class="btn sm ghost filter-toggle" id="f-toggle">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M3 5h18l-7 8v6l-4 2v-8z"></path></svg>
+        Фильтр товаров${activeCount ? `<span class="n">${activeCount}</span>` : ''}
+      </button>
+      <select id="f-sort">
+        <option value="pop"        ${sort==='pop'?'selected':''}>Сначала популярные</option>
+        <option value="price_asc"  ${sort==='price_asc'?'selected':''}>Сначала дешёвые</option>
+        <option value="price_desc" ${sort==='price_desc'?'selected':''}>Сначала дорогие</option>
+        <option value="new"        ${sort==='new'?'selected':''}>Новинки</option>
+        <option value="name"       ${sort==='name'?'selected':''}>По названию</option>
+      </select>
+      <span class="count">Показано ${list.length}</span>
+    </div>
 
     <div class="catalog">
-      <aside class="filters">
-        ${brand ? '' : `<div>
-          <h4>Категории</h4>
-          <ul>
-            <li><a href="#/catalog" class="${slug?'':'on'}">Все категории <small>${S.products.length}</small></a></li>
-            ${visibleTop().map(c => `
-              <li><a href="#/catalog/${c.slug}" class="${slug===c.slug?'on':''}">${esc(c.title)} <small>${countIn(c.slug)}</small></a></li>
-              ${visibleChildren(c.slug).map(k => `
-                <li class="sub"><a href="#/catalog/${k.slug}" class="${slug===k.slug?'on':''}">${esc(k.title)} <small>${countIn(k.slug)}</small></a></li>`).join('')}
-            `).join('')}
-          </ul>
-        </div>`}
-
-        <div>
-          <h4>Цена, ₽</h4>
-          <div class="price-row">
-            <input type="number" id="f-min" placeholder="от" value="${min||''}">
-            <input type="number" id="f-max" placeholder="до" value="${isFinite(max)?max:''}">
-          </div>
-          <button class="btn sm ghost" id="f-apply" style="margin-top:10px;width:100%">Применить</button>
-        </div>
-
-        ${brandsHere.length > 1 ? `<div>
-          <h4>Бренд</h4>
-          <ul class="checks">
-            ${brandsHere.map(b => `
-              <li><label class="check">
-                <input type="checkbox" data-brand="${esc(b)}" ${picked.includes(b)?'checked':''}>
-                <span>${esc(b)}</span></label></li>`).join('')}
-          </ul>
-        </div>` : ''}
-
-        ${facetList.map(([key, vals]) => `<div>
-          <h4>${esc(key)}</h4>
-          <ul class="checks">
-            ${vals.map(v => `
-              <li><label class="check">
-                <input type="checkbox" data-spec="${esc(key)}" data-val="${esc(v)}" ${(spec[key]||[]).includes(v)?'checked':''}>
-                <span>${esc(v)}</span></label></li>`).join('')}
-          </ul>
-        </div>`).join('')}
-
-        <div>
-          <h4>Наличие</h4>
-          <label class="check"><input type="checkbox" id="f-stock" ${onlyIn?'checked':''}> <span>Только в наличии</span></label>
-          <label class="check" style="margin-top:10px"><input type="checkbox" id="f-sale" ${badge==='sale'?'checked':''}> <span>Со скидкой</span></label>
-        </div>
-
-        ${activeCount ? `<a class="btn sm ghost" style="margin-top:22px;width:100%" href="${base}">Сбросить фильтры</a>` : ''}
-      </aside>
-
+      <div class="filters-back" id="filters-back"></div>
+      <aside class="filters">${filtersHTML}</aside>
       <section>
-        <div class="toolbar">
-          <span class="count">Показано ${list.length}</span>
-          <select id="f-sort">
-            <option value="pop"        ${sort==='pop'?'selected':''}>Сначала популярные</option>
-            <option value="price_asc"  ${sort==='price_asc'?'selected':''}>Сначала дешёвые</option>
-            <option value="price_desc" ${sort==='price_desc'?'selected':''}>Сначала дорогие</option>
-            <option value="new"        ${sort==='new'?'selected':''}>Новинки</option>
-            <option value="name"       ${sort==='name'?'selected':''}>По названию</option>
-          </select>
-        </div>
         ${list.length
           ? `<div class="grid">${list.map(cardHTML).join('')}</div>`
-          : `<div class="empty"><b>Ничего не нашли</b>Попробуйте снять часть фильтров или напишите нам в WhatsApp — привезём под заказ.</div>`}
+          : `<div class="empty"><b>Ничего не нашли</b>Снимите часть фильтров или напишите нам в WhatsApp — привезём под заказ.</div>`}
       </section>
     </div>
   </div>`;
 
-  const toggle = $('#f-toggle');
-  toggle.onclick = () => {
-    const open = $('.filters').classList.toggle('is-open');
-    toggle.innerHTML = (open ? 'Скрыть фильтры' : 'Фильтры') + (activeCount ? `<span class="n">${activeCount}</span>` : '');
-  };
-  if (activeCount) $('.filters').classList.add('is-open');
+  /* ---------------------- поведение панели фильтров ---------------------- */
+  const panel = $('.filters');
+  const wide = () => !window.matchMedia('(max-width:900px)').matches;
 
+  const pending = {
+    brands: [...picked],
+    spec: JSON.parse(JSON.stringify(spec)),
+    min: min || lowest,
+    max: isFinite(max) ? max : highest,
+    stock: onlyIn,
+    sale: badge === 'sale',
+    q: q.get('q') || '',
+  };
+
+  const openPanel  = () => {
+    panel.classList.add('is-open');
+    $('#filters-back').classList.add('on');
+    document.body.classList.add('scroll-lock');
+  };
+  const closePanel = () => {
+    panel.classList.remove('is-open');
+    $('#filters-back').classList.remove('on');
+    document.body.classList.remove('scroll-lock');
+  };
+
+  const applyNow = () => {
+    location.hash = link({
+      brand: pending.brands.join('~') || null,
+      spec:  buildSpec(pending.spec) || null,
+      min:   +pending.min > lowest  ? pending.min : null,
+      max:   +pending.max < highest ? pending.max : null,
+      stock: pending.stock ? '1' : null,
+      badge: pending.sale ? 'sale' : null,
+      q:     pending.q.trim() || null,
+    });
+    closePanel();
+  };
+  const changed = () => { if (wide()) applyNow(); };
+
+  $('#f-toggle').onclick = () => panel.classList.contains('is-open') ? closePanel() : openPanel();
+  $('#f-close').onclick  = closePanel;
+  $('#filters-back').onclick = closePanel;
+  $('#f-apply').onclick  = applyNow;
+  $('#f-reset').onclick  = () => { closePanel(); location.hash = base; };
   $('#f-sort').onchange  = e => location.hash = link({ sort: e.target.value });
-  $('#f-stock').onchange = e => location.hash = link({ stock: e.target.checked ? '1' : null });
-  $('#f-sale').onchange  = e => location.hash = link({ badge: e.target.checked ? 'sale' : null });
-  $('#f-apply').onclick  = () => location.hash = link({ min: $('#f-min').value, max: $('#f-max').value });
+
+  const search = $('#f-query');
+  search.oninput = () => { pending.q = search.value; };
+  search.onkeydown = e => { if (e.key === 'Enter'){ e.preventDefault(); applyNow(); } };
+
+  $('#f-stock').onchange = e => { pending.stock = e.target.checked; changed(); };
+  $('#f-sale').onchange  = e => { pending.sale  = e.target.checked; changed(); };
 
   $$('[data-brand]').forEach(box => box.onchange = () => {
-    const next = toggleValue(picked, box.dataset.brand);
-    location.hash = link({ brand: next.join('~') || null });
+    pending.brands = toggleValue(pending.brands, box.dataset.brand);
+    changed();
   });
 
   $$('[data-spec]').forEach(box => box.onchange = () => {
     const key = box.dataset.spec, val = box.dataset.val;
-    const next = { ...spec, [key]: toggleValue(spec[key] || [], val) };
-    if (!next[key].length) delete next[key];
-    location.hash = link({ spec: buildSpec(next) || null });
+    pending.spec[key] = toggleValue(pending.spec[key] || [], val);
+    if (!pending.spec[key].length) delete pending.spec[key];
+    changed();
   });
+
+  $$('[data-more]').forEach(btn => btn.onclick = () => {
+    const group = btn.closest('.fgroup');
+    const hiddenItems = $$('.more', group);
+    const opened = !hiddenItems[0].classList.contains('hidden');
+    hiddenItems.forEach(li => li.classList.toggle('hidden', opened));
+    btn.textContent = opened ? 'Ещё варианты' : 'Свернуть';
+  });
+
+  // ползунок цены: две ручки на общей дорожке
+  const rMin = $('#r-min'), rMax = $('#r-max');
+  if (rMin && rMax){
+    const fill = $('#r-fill'), span = (highest - lowest) || 1;
+    const paintRange = () => {
+      const from = Math.min(+rMin.value, +rMax.value);
+      const to   = Math.max(+rMin.value, +rMax.value);
+      pending.min = from; pending.max = to;
+      $('#r-from').textContent = money(from);
+      $('#r-to').textContent   = money(to);
+      fill.style.left  = ((from - lowest) / span * 100) + '%';
+      fill.style.right = (100 - (to - lowest) / span * 100) + '%';
+    };
+    rMin.oninput = rMax.oninput = paintRange;
+    rMin.onchange = rMax.onchange = () => changed();
+    paintRange();
+  }
+
+  if (activeCount && wide()) panel.classList.add('is-open');
 }
 
 /* ------------------------------------------------------------- бренды */

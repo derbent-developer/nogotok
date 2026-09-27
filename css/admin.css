@@ -110,6 +110,8 @@ textarea.inp{height:auto;min-height:96px;padding:11px 13px;resize:vertical;line-
 }
 .drop:hover{border-color:var(--ink);color:var(--ink)}
 .spec-row{display:grid;grid-template-columns:1fr 1.4fr 42px;gap:10px;margin-bottom:9px}
+.attr-row{display:grid;grid-template-columns:1fr 46px;gap:10px}
+.attr-row .btn{height:42px;padding:0;font-size:18px}
 
 /* ------- заказы ------- */
 .order{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin-bottom:14px}

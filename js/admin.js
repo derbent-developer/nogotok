@@ -215,13 +215,22 @@ async function start(){
 }
 
 function counters(){
+  A.db.settings.brands = A.db.settings.brands || [];
+  A.db.settings.attributes = A.db.settings.attributes || [];
   $('#n-products').textContent = A.db.products.length;
+  $('#n-brands').textContent = A.db.settings.brands.length;
   $('#n-categories').textContent = A.db.categories.length;
+  $('#n-attributes').textContent = A.db.settings.attributes.length;
 }
+
+/* Сколько товаров у бренда и у значения характеристики. */
+const usedBrand = name => A.db.products.filter(p => (p.brand||'').trim() === name).length;
+const usedAttr  = (key, val) => A.db.products.filter(p => (p.attrs||{})[key] === val).length;
 
 function render(){
   $$('#nav button').forEach(b => b.classList.toggle('on', b.dataset.tab === A.tab));
-  ({ products: viewProducts, categories: viewCategories, orders: viewOrders,
+  ({ products: viewProducts, brands: viewBrands, categories: viewCategories,
+     attributes: viewAttributes, orders: viewOrders,
      settings: viewSettings, security: viewSecurity }[A.tab] || viewProducts)();
 }
 
@@ -301,7 +310,7 @@ function viewProducts(){
 /* --------------------------------------------------- редактор товара */
 function editProduct(p){
   const isNew = !p || !p.id;
-  const d = p || { images: [], specs: [], inStock: true, published: true, unit: 'шт', price: 0, oldPrice: 0,
+  const d = p || { images: [], attrs: {}, inStock: true, published: true, unit: 'шт', price: 0, oldPrice: 0,
                    category: (A.db.categories[0] || {}).slug || '' };
 
   openSheet(`
@@ -313,14 +322,19 @@ function editProduct(p){
       <div class="row3">
         <div class="f"><label class="lbl">Категория *</label>
           <select class="inp" name="category">
-            ${A.db.categories.map(c => `<option value="${esc(c.slug)}" ${d.category===c.slug?'selected':''}>${esc(c.title)}</option>`).join('')}
+            ${A.db.categories.filter(c => !c.parent).map(c => `
+              <option value="${esc(c.slug)}" ${d.category===c.slug?'selected':''}>${esc(c.title)}</option>
+              ${A.db.categories.filter(k => k.parent === c.slug).map(k =>
+                `<option value="${esc(k.slug)}" ${d.category===k.slug?'selected':''}>&nbsp;&nbsp;&nbsp;└ ${esc(k.title)}</option>`).join('')}
+            `).join('')}
           </select></div>
         <div class="f"><label class="lbl">Бренд</label>
-          <input class="inp" name="brand" value="${esc(d.brand||'')}" placeholder="Strong" list="brand-list" autocomplete="off">
-          <datalist id="brand-list">
-            ${(A.db.settings.brands || []).map(b => `<option value="${esc(b)}"></option>`).join('')}
-          </datalist>
-          <div class="hint">Список брендов редактируется в настройках</div></div>
+          <select class="inp" name="brand">
+            <option value="">— без бренда —</option>
+            ${(A.db.settings.brands || []).map(b =>
+              `<option value="${esc(b)}" ${d.brand === b ? 'selected' : ''}>${esc(b)}</option>`).join('')}
+          </select>
+          <div class="hint">Список брендов — в разделе «Бренды»</div></div>
         <div class="f"><label class="lbl">Артикул</label>
           <input class="inp" name="sku" value="${esc(d.sku||'')}" placeholder="AP-001"></div>
       </div>
@@ -359,8 +373,12 @@ function editProduct(p){
         <textarea class="inp" name="description" placeholder="Из чего состоит, для кого, чем хорош">${esc(d.description||'')}</textarea></div>
 
       <div class="f"><label class="lbl">Характеристики</label>
-        <div id="specs"></div>
-        <button type="button" class="btn sm ghost" id="spec-add">+ Добавить строку</button></div>
+        <div class="hint" style="margin:0 0 12px">
+          По ним покупатель фильтрует каталог. Набор характеристик задаётся в разделе «Характеристики»,
+          кнопка «+» добавляет новое значение прямо отсюда.
+        </div>
+        <div id="attrs"></div>
+      </div>
 
       <div class="sheet-foot">
         <button type="button" class="btn ghost" id="cancel">Отмена</button>
@@ -369,7 +387,7 @@ function editProduct(p){
     </form>`);
 
   let images = [...(d.images || [])];
-  let specs  = (d.specs || []).map(s => ({ ...s }));
+  const chosen = { ...(d.attrs || {}) };
 
   const paintImages = () => {
     $('#imgs').innerHTML = images.map((src,i) => `
@@ -385,16 +403,33 @@ function editProduct(p){
     }
   };
 
-  const paintSpecs = () => {
-    $('#specs').innerHTML = specs.map((s,i) => `
-      <div class="spec-row">
-        <input class="inp" placeholder="Параметр" value="${esc(s.k)}" data-k="${i}">
-        <input class="inp" placeholder="Значение" value="${esc(s.v)}" data-v="${i}">
-        <button type="button" class="btn sm danger" data-sr="${i}">×</button>
-      </div>`).join('');
-    $$('[data-k]').forEach(inp => inp.oninput = () => specs[+inp.dataset.k].k = inp.value);
-    $$('[data-v]').forEach(inp => inp.oninput = () => specs[+inp.dataset.v].v = inp.value);
-    $$('[data-sr]').forEach(b => b.onclick = () => { specs.splice(+b.dataset.sr,1); paintSpecs(); });
+  const paintAttrs = () => {
+    const attrs = A.db.settings.attributes || [];
+    $('#attrs').innerHTML = attrs.length ? attrs.map(a => `
+      <div class="f">
+        <label class="lbl">${esc(a.name)}</label>
+        <div class="attr-row">
+          <select class="inp" data-attr="${esc(a.name)}">
+            <option value="">— не указано —</option>
+            ${a.values.map(v => `<option value="${esc(v)}" ${chosen[a.name] === v ? 'selected' : ''}>${esc(v)}</option>`).join('')}
+          </select>
+          <button type="button" class="btn ghost" data-attr-add="${esc(a.name)}" title="Добавить новое значение">+</button>
+        </div>
+      </div>`).join('')
+      : '<div class="hint">Характеристик пока нет. Добавьте их в разделе «Характеристики».</div>';
+
+    $$('[data-attr]').forEach(sel => sel.onchange = () => { chosen[sel.dataset.attr] = sel.value; });
+    $$('[data-attr-add]').forEach(btn => btn.onclick = () => {
+      const name = btn.dataset.attrAdd;
+      const attr = (A.db.settings.attributes || []).find(a => a.name === name);
+      const value = (prompt(`Новое значение для «${name}»`, '') || '').trim();
+      if (!attr || !value) return;
+      if (!attr.values.includes(value)){
+        attr.values = [...attr.values, value].sort((x,y) => x.localeCompare(y,'ru',{numeric:true}));
+      }
+      chosen[name] = value;
+      paintAttrs();
+    });
   };
 
   async function uploadFiles(files){
@@ -408,9 +443,8 @@ function editProduct(p){
     }
   }
 
-  paintImages(); paintSpecs();
+  paintImages(); paintAttrs();
   $('#file').onchange = e => uploadFiles(e.target.files);
-  $('#spec-add').onclick = () => { specs.push({ k:'', v:'' }); paintSpecs(); };
   $('#cancel').onclick = closeSheet;
 
   $('#pf').onsubmit = async e => {
@@ -433,7 +467,7 @@ function editProduct(p){
       inStock: f.inStock.checked, published: f.published.checked,
       description: f.description.value.trim(),
       images: images.slice(0, 8),
-      specs: specs.filter(s => s.k.trim()).map(s => ({ k: s.k.trim(), v: s.v.trim() })),
+      attrs: Object.fromEntries(Object.entries(chosen).filter(([, v]) => v)),
     });
     if (isNew) A.db.products.push(target);
 
@@ -457,6 +491,170 @@ function editProduct(p){
       $('#save').disabled = false; $('#save').textContent = isNew ? 'Создать и опубликовать' : 'Сохранить';
     }
   };
+}
+
+/* ------------------------------------------------------------- бренды */
+function viewBrands(){
+  const brands = A.db.settings.brands || [];
+  $('#view').innerHTML = `
+    <div class="topline">
+      <div><h1>Бренды</h1><p>Из этого списка бренд выбирается в карточке товара. На сайте показываются только бренды с товарами</p></div>
+      <div class="tools">
+        <input class="inp" id="b-new" placeholder="Название бренда" style="width:220px">
+        <button class="btn" id="b-add">+ Добавить бренд</button>
+      </div>
+    </div>
+    ${brands.length ? `<table class="table">
+      <thead><tr><th>Бренд</th><th>Товаров</th><th>На сайте</th><th></th></tr></thead>
+      <tbody>${brands.map((b,i) => `
+        <tr>
+          <td><div class="cellname">
+            <div class="thumb" style="font-size:15px">◆</div>
+            <div><b>${esc(b)}</b></div>
+          </div></td>
+          <td>${usedBrand(b)}</td>
+          <td>${usedBrand(b) ? '<span class="tag on">виден</span>' : '<span class="tag">пока скрыт</span>'}</td>
+          <td><div class="acts">
+            <button class="btn sm ghost" data-bren="${i}">Переименовать</button>
+            <button class="btn sm danger" data-bdel="${i}">Удалить</button>
+          </div></td>
+        </tr>`).join('')}</tbody>
+    </table>`
+    : `<div class="empty"><b>Брендов нет</b>Добавьте первый бренд, и он появится в карточке товара.</div>`}`;
+
+  const addBrand = async () => {
+    const name = $('#b-new').value.trim();
+    if (!name) return;
+    if (brands.some(b => b.toLowerCase() === name.toLowerCase())) return toast('Такой бренд уже есть', true);
+    A.db.settings.brands = [...brands, name].sort((x,y) => x.toLowerCase().localeCompare(y.toLowerCase(),'ru'));
+    try{ await saveDb('Добавлен бренд: ' + name); counters(); viewBrands(); toast('Бренд добавлен'); }
+    catch(e){ A.db.settings.brands = brands; toast(e.message, true); }
+  };
+  $('#b-add').onclick = addBrand;
+  $('#b-new').onkeydown = e => { if (e.key === 'Enter'){ e.preventDefault(); addBrand(); } };
+
+  $$('[data-bren]').forEach(b => b.onclick = async () => {
+    const i = +b.dataset.bren, was = brands[i];
+    const name = (prompt('Новое название бренда', was) || '').trim();
+    if (!name || name === was) return;
+    const next = brands.slice(); next[i] = name;
+    const backup = A.db.products.map(p => p.brand);
+    A.db.settings.brands = next.sort((x,y) => x.toLowerCase().localeCompare(y.toLowerCase(),'ru'));
+    A.db.products.forEach(p => { if ((p.brand||'').trim() === was) p.brand = name; });
+    try{ await saveDb(`Бренд «${was}» переименован в «${name}»`); counters(); viewBrands(); toast('Переименовано'); }
+    catch(e){
+      A.db.settings.brands = brands;
+      A.db.products.forEach((p,k) => p.brand = backup[k]);
+      toast(e.message, true);
+    }
+  });
+
+  $$('[data-bdel]').forEach(b => b.onclick = async () => {
+    const i = +b.dataset.bdel, name = brands[i];
+    if (usedBrand(name)) return toast(`«${name}» стоит у ${usedBrand(name)} товаров — сначала смените бренд у них`, true);
+    if (!confirm(`Удалить бренд «${name}»?`)) return;
+    A.db.settings.brands = brands.filter((_,k) => k !== i);
+    try{ await saveDb('Удалён бренд: ' + name); counters(); viewBrands(); toast('Бренд удалён'); }
+    catch(e){ A.db.settings.brands = brands; toast(e.message, true); }
+  });
+}
+
+/* ------------------------------------------------------ характеристики */
+function viewAttributes(){
+  const attrs = A.db.settings.attributes || [];
+  $('#view').innerHTML = `
+    <div class="topline">
+      <div><h1>Характеристики</h1><p>Из них собираются фильтры в каталоге. Значения выбираются в карточке товара</p></div>
+      <div class="tools">
+        <input class="inp" id="a-new" placeholder="Например: Объём" style="width:220px">
+        <button class="btn" id="a-add">+ Добавить характеристику</button>
+      </div>
+    </div>
+
+    ${attrs.length ? attrs.map((a,i) => `
+      <div class="card">
+        <div class="topline" style="margin-bottom:14px">
+          <div><h3>${esc(a.name)}</h3>
+            <p>${a.values.length} ${a.values.length===1?'значение':'значений'} · фильтр появится, когда значения будут у товаров</p></div>
+          <div class="tools">
+            <button class="btn sm ghost" data-aren="${i}">Переименовать</button>
+            <button class="btn sm danger" data-adel="${i}">Удалить</button>
+          </div>
+        </div>
+        <div class="brand-chips">
+          ${a.values.map((v,j) => `
+            <span class="chip-row">${esc(v)}<small>${usedAttr(a.name, v)}</small>
+              <button type="button" data-vdel="${i}:${j}" title="Убрать значение">×</button></span>`).join('')
+            || '<div class="hint">Значений нет. Добавьте их здесь или прямо в карточке товара.</div>'}
+        </div>
+        <div class="row2" style="align-items:end;margin-top:14px">
+          <div class="f" style="margin:0"><label class="lbl">Новое значение</label>
+            <input class="inp" data-vnew="${i}" placeholder="15 мл"></div>
+          <div class="f" style="margin:0"><button class="btn ghost" data-vadd="${i}">Добавить значение</button></div>
+        </div>
+      </div>`).join('')
+    : `<div class="empty"><b>Характеристик нет</b>Добавьте, например, «Объём» или «Тип товара» — по ним покупатель будет фильтровать каталог.</div>`}`;
+
+  const save = async (message, revert) => {
+    try{ await saveDb(message); counters(); viewAttributes(); toast('Сохранено'); }
+    catch(e){ revert(); toast(e.message, true); viewAttributes(); }
+  };
+
+  const addAttr = () => {
+    const name = $('#a-new').value.trim();
+    if (!name) return;
+    if (attrs.some(a => a.name.toLowerCase() === name.toLowerCase())) return toast('Такая характеристика уже есть', true);
+    const backup = attrs.slice();
+    A.db.settings.attributes = [...attrs, { name, values: [] }];
+    save('Добавлена характеристика: ' + name, () => A.db.settings.attributes = backup);
+  };
+  $('#a-add').onclick = addAttr;
+  $('#a-new').onkeydown = e => { if (e.key === 'Enter'){ e.preventDefault(); addAttr(); } };
+
+  $$('[data-aren]').forEach(b => b.onclick = () => {
+    const a = attrs[+b.dataset.aren], was = a.name;
+    const name = (prompt('Новое название характеристики', was) || '').trim();
+    if (!name || name === was) return;
+    a.name = name;
+    A.db.products.forEach(p => {
+      if (p.attrs && was in p.attrs){ p.attrs[name] = p.attrs[was]; delete p.attrs[was]; }
+    });
+    save(`Характеристика «${was}» переименована в «${name}»`, () => { a.name = was; });
+  });
+
+  $$('[data-adel]').forEach(b => b.onclick = () => {
+    const a = attrs[+b.dataset.adel];
+    const used = A.db.products.filter(p => (p.attrs||{})[a.name]).length;
+    if (used) return toast(`«${a.name}» заполнена у ${used} товаров — сначала очистите её там`, true);
+    if (!confirm(`Удалить характеристику «${a.name}»?`)) return;
+    const backup = attrs.slice();
+    A.db.settings.attributes = attrs.filter((_,k) => k !== +b.dataset.adel);
+    save('Удалена характеристика: ' + a.name, () => A.db.settings.attributes = backup);
+  });
+
+  $$('[data-vadd]').forEach(b => b.onclick = () => {
+    const i = +b.dataset.vadd;
+    const input = $(`[data-vnew="${i}"]`);
+    const value = input.value.trim();
+    if (!value) return;
+    if (attrs[i].values.includes(value)) return toast('Такое значение уже есть', true);
+    attrs[i].values = [...attrs[i].values, value].sort((x,y) => x.localeCompare(y,'ru',{numeric:true}));
+    save(`Значение «${value}» в характеристике «${attrs[i].name}»`, () => {
+      attrs[i].values = attrs[i].values.filter(v => v !== value);
+    });
+  });
+  $$('[data-vnew]').forEach(inp => inp.onkeydown = e => {
+    if (e.key === 'Enter'){ e.preventDefault(); $(`[data-vadd="${inp.dataset.vnew}"]`).click(); }
+  });
+
+  $$('[data-vdel]').forEach(b => b.onclick = () => {
+    const [i, j] = b.dataset.vdel.split(':').map(Number);
+    const value = attrs[i].values[j];
+    if (usedAttr(attrs[i].name, value)) return toast(`«${value}» стоит у ${usedAttr(attrs[i].name, value)} товаров`, true);
+    const backup = attrs[i].values.slice();
+    attrs[i].values = attrs[i].values.filter((_,k) => k !== j);
+    save(`Убрано значение «${value}»`, () => attrs[i].values = backup);
+  });
 }
 
 /* ---------------------------------------------------------- категории */

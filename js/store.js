@@ -60,13 +60,13 @@ function paintChrome(){
 
   const cats = visibleTop();
   $('#topnav').innerHTML =
-    `<a href="#/brands">Все бренды</a>` +
+    (brandList().length ? `<a href="#/brands">Все бренды</a>` : '') +
     cats.slice(0,7).map(c => `<a href="#/catalog/${c.slug}">${esc(c.title)}</a>`).join('') +
     `<a href="#/catalog?badge=sale" class="accent">Скидки</a><a href="#/delivery">Доставка</a>`;
 
   paintMega();
 
-  $('#f-cats').innerHTML = `<li><a href="#/brands">Все бренды</a></li>` + cats.slice(0,6)
+  $('#f-cats').innerHTML = (brandList().length ? `<li><a href="#/brands">Все бренды</a></li>` : '') + cats.slice(0,6)
     .map(c => `<li><a href="#/catalog/${c.slug}">${esc(c.title)}</a></li>`).join('');
 }
 
@@ -114,6 +114,11 @@ function paintMega(level = '', parent = ''){
     return;
   }
 
+  if (!S.products.length){
+    box.innerHTML = `<div class="hint" style="grid-column:1/-1;color:var(--muted);padding:10px 4px">
+      Каталог наполняется, разделы появятся вместе с товарами.</div>`;
+    return;
+  }
   box.innerHTML =
     line('#/brands', '◆', 'Все бренды', `${brandList().length} ${plural(brandList().length,'бренд','бренда','брендов')}`, 'brands') +
     visibleTop().map(c => {
@@ -170,6 +175,7 @@ function picture(p, cls){
 }
 
 const BADGES = { hit:['hit','Хит'], new:['new','Новинка'], sale:['sale','Скидка'] };
+const discountOf = p => p.oldPrice > p.price ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
 
 function cardHTML(p){
   const inCart = S.cart.find(i => i.id === p.id);
@@ -226,6 +232,30 @@ function uspHTML(){
 /* -------------------------------------------------------------- главная */
 function renderHome(){
   const slides = S.settings.heroSlides || [];
+  if (!S.products.length){
+    $('#app').innerHTML = `
+    <div class="wrap">
+      <section class="hero">
+        <div class="hero-track">
+          <div class="hero-slide" style="background:#f2e7e4">
+            <div>
+              <h1>${esc(S.settings.shopName || 'Ноготок')}</h1>
+              <p>${esc(S.settings.tagline || '')}</p>
+              <a class="btn wa" id="empty-wa" target="_blank" rel="noopener">Написать в WhatsApp</a>
+            </div>
+          </div>
+        </div>
+      </section>
+      <div class="empty" style="margin-top:40px">
+        <b>Каталог наполняется</b>
+        Товары появятся здесь совсем скоро. Пока что напишите нам в WhatsApp —
+        подскажем по наличию и привезём под заказ.
+      </div>
+      ${uspHTML()}
+    </div>`;
+    $('#empty-wa').href = waLink('Здравствуйте! Интересует оборудование и расходники.');
+    return;
+  }
   const hits = S.products.filter(p => p.badge === 'hit').slice(0,10);
   const fresh = S.products.filter(p => p.badge === 'new' || p.badge === 'sale').slice(0,10);
   const rest = S.products.slice(0,15);
@@ -313,14 +343,9 @@ function buildSpec(obj){
     .map(([k, v]) => [k, ...v].join('~'))
     .join(';');
 }
-const specValues = p => {
-  const map = {};
-  (p.specs || []).forEach(x => { if (x.k && x.v) (map[x.k] = map[x.k] || []).push(x.v); });
-  return map;
-};
 function matchesSpec(p, filter){
-  const own = specValues(p);
-  return Object.entries(filter).every(([k, vals]) => (own[k] || []).some(v => vals.includes(v)));
+  const own = p.attrs || {};
+  return Object.entries(filter).every(([k, vals]) => vals.includes(own[k]));
 }
 
 /**
@@ -361,22 +386,26 @@ function renderCatalog(slug, q, brand){
     price_desc:(a,b) => b.price - a.price,
     name:      (a,b) => a.title.localeCompare(b.title,'ru'),
     new:       (a,b) => b.id - a.id,
+    sale:      (a,b) => discountOf(b) - discountOf(a) || a.id - b.id,
   };
   list.sort(sorters[sort] || sorters.pop);
 
   // из чего собрать фильтры
   const brandsHere = [...new Set(scope.map(p => (p.brand || '').trim()).filter(Boolean))]
     .sort((a,b) => a.localeCompare(b,'ru'));
+  // порядок фильтров задаётся в панели, в разделе «Характеристики»
   const facets = {};
-  scope.forEach(p => (p.specs || []).forEach(x => {
-    if (!x.k || !x.v) return;
-    (facets[x.k] = facets[x.k] || new Set()).add(x.v);
+  scope.forEach(p => Object.entries(p.attrs || {}).forEach(([k, v]) => {
+    if (v) (facets[k] = facets[k] || new Set()).add(v);
   }));
+  const order = (S.settings.attributes || []).map(a => a.name);
   const facetList = Object.entries(facets)
     .map(([k, set]) => [k, [...set].sort((a,b) => a.localeCompare(b,'ru',{numeric:true}))])
     .filter(([, vals]) => vals.length > 1)
-    .sort((a,b) => b[1].length - a[1].length)
-    .slice(0, 6);
+    .sort((a,b) => {
+      const ia = order.indexOf(a[0]), ib = order.indexOf(b[0]);
+      return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+    });
 
   const base = brand ? '#/brand/' + encodeURIComponent(brand) : '#/catalog' + (slug ? '/' + slug : '');
   const link = extra => {
@@ -514,11 +543,12 @@ function renderCatalog(slug, q, brand){
         Фильтр товаров${activeCount ? `<span class="n">${activeCount}</span>` : ''}
       </button>
       <select id="f-sort">
-        <option value="pop"        ${sort==='pop'?'selected':''}>Сначала популярные</option>
-        <option value="price_asc"  ${sort==='price_asc'?'selected':''}>Сначала дешёвые</option>
-        <option value="price_desc" ${sort==='price_desc'?'selected':''}>Сначала дорогие</option>
-        <option value="new"        ${sort==='new'?'selected':''}>Новинки</option>
-        <option value="name"       ${sort==='name'?'selected':''}>По названию</option>
+        <option value="pop"        ${sort==='pop'?'selected':''}>По умолчанию</option>
+        <option value="price_asc"  ${sort==='price_asc'?'selected':''}>По возрастанию цены</option>
+        <option value="price_desc" ${sort==='price_desc'?'selected':''}>По убыванию цены</option>
+        <option value="new"        ${sort==='new'?'selected':''}>По новинкам</option>
+        <option value="sale"       ${sort==='sale'?'selected':''}>По скидке</option>
+        <option value="name"       ${sort==='name'?'selected':''}>По алфавиту</option>
       </select>
       <span class="count">Показано ${list.length}</span>
     </div>
@@ -529,7 +559,9 @@ function renderCatalog(slug, q, brand){
       <section>
         ${list.length
           ? `<div class="grid">${list.map(cardHTML).join('')}</div>`
-          : `<div class="empty"><b>Ничего не нашли</b>Снимите часть фильтров или напишите нам в WhatsApp — привезём под заказ.</div>`}
+          : (S.products.length
+              ? `<div class="empty"><b>Ничего не нашли</b>Снимите часть фильтров или напишите нам в WhatsApp — привезём под заказ.</div>`
+              : `<div class="empty"><b>Каталог наполняется</b>Товары появятся совсем скоро. Напишите нам в WhatsApp — подскажем по наличию.</div>`)}
       </section>
     </div>
   </div>`;
@@ -708,8 +740,9 @@ function renderProduct(id){
     <div class="p-wrap">
       <div class="p-desc">
         ${p.description ? `<h3>Описание</h3><p>${esc(p.description)}</p>` : ''}
-        ${p.specs && p.specs.length ? `<h3 style="margin-top:30px">Характеристики</h3>
-          <table class="spec-table">${p.specs.map(s=>`<tr><td>${esc(s.k)}</td><td>${esc(s.v)}</td></tr>`).join('')}</table>` : ''}
+        ${Object.keys(p.attrs || {}).length ? `<h3 style="margin-top:30px">Характеристики</h3>
+          <table class="spec-table">${Object.entries(p.attrs).map(([k,v]) =>
+            `<tr><td>${esc(k)}</td><td>${esc(v)}</td></tr>`).join('')}</table>` : ''}
       </div>
     </div>
 

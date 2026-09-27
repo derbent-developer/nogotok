@@ -83,8 +83,41 @@ h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-.02em}
   position:fixed;left:0;right:0;bottom:0;top:var(--header-h);background:rgba(16,16,16,.35);z-index:55;display:none;
 }
 .megamenu.open{display:block}
-.megamenu-panel{background:#fff;padding:34px 0 44px;max-height:calc(100vh - var(--header-h));overflow:auto}
-.megamenu-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.megamenu-panel{
+  background:#fff;width:390px;max-width:92vw;height:100%;overflow-y:auto;
+  padding:0 0 40px;box-shadow:var(--shadow);
+}
+.megamenu-grid{display:block}
+.ctree-head{
+  font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;
+  padding:20px 22px 14px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff;z-index:2;
+}
+.ctree-empty{padding:26px 22px;color:var(--muted);font-size:13px}
+
+.ctree{list-style:none;margin:0;padding:0}
+.ctree .ctree-row{display:flex;align-items:stretch;border-bottom:1px solid var(--line)}
+.ctree .ctree-row a{
+  flex:1;min-width:0;padding:14px 8px 14px 22px;font-size:14px;line-height:1.35;
+  display:flex;align-items:center;gap:8px;transition:.14s;
+}
+.ctree .ctree-row a small{color:var(--muted);font-size:11.5px;font-weight:600}
+.ctree .ctree-row a:hover{color:var(--accent)}
+.ctree > li.on > .ctree-row > a{color:var(--accent);font-weight:600}
+.ctree-toggle{
+  width:52px;flex:none;font-size:22px;line-height:1;color:var(--muted);
+  display:grid;place-items:center;transition:transform .2s,color .14s;
+}
+.ctree-toggle:hover{color:var(--ink)}
+.ctree li.open > .ctree-row > .ctree-toggle{transform:rotate(90deg);color:var(--ink)}
+.ctree-sub{list-style:none;margin:0;padding:4px 0 10px;background:var(--surface)}
+.ctree-sub.hidden{display:none}
+.ctree-sub li a{
+  display:flex;justify-content:space-between;gap:10px;padding:10px 22px 10px 38px;
+  font-size:13px;color:var(--ink-2);
+}
+.ctree-sub li a:hover{color:var(--accent)}
+.ctree-sub li.on a{color:var(--accent);font-weight:600}
+.ctree-sub li a small{color:var(--muted);font-size:11.5px}
 .megamenu-item{
   display:flex;align-items:center;gap:12px;padding:16px 18px;border:1px solid var(--line);border-radius:var(--radius);
   font-size:13px;font-weight:500;transition:.16s;background:#fff;
@@ -241,6 +274,11 @@ h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-.02em}
   cursor:pointer;pointer-events:auto;
 }
 
+.filters .ctree{margin:0 -18px}
+.filters .ctree .ctree-row a{padding:11px 8px 11px 18px;font-size:13px}
+.filters .ctree-toggle{width:44px;font-size:19px}
+.filters .ctree-sub li a{padding:9px 18px 9px 32px;font-size:12.5px}
+.filters .ctree.flat .ctree-row{border-bottom:1px solid var(--line)}
 .filters h4{font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin:26px 0 12px;color:var(--muted)}
 .filters ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
 .filters li a{font-size:13px;color:var(--ink-2);display:flex;justify-content:space-between;gap:8px}
@@ -416,7 +454,12 @@ h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-.02em}
   .filters-foot{display:flex;gap:10px;padding:14px 18px calc(16px + env(safe-area-inset-bottom));
     border-top:1px solid var(--line);background:#fff;flex:none}
   .filters-foot .btn{flex:1;height:48px}
-  .filters h4{margin-top:22px}
+  .filters .ctree{margin:0 -18px}
+.filters .ctree .ctree-row a{padding:11px 8px 11px 18px;font-size:13px}
+.filters .ctree-toggle{width:44px;font-size:19px}
+.filters .ctree-sub li a{padding:9px 18px 9px 32px;font-size:12.5px}
+.filters .ctree.flat .ctree-row{border-bottom:1px solid var(--line)}
+.filters h4{margin-top:22px}
 }
 
 @media (max-width:720px){
@@ -440,7 +483,7 @@ h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-.02em}
   .search{order:9;flex-basis:100%;max-width:none;margin-bottom:2px}
   .search input{height:42px}
   .navbar .wrap{height:42px;gap:22px}
-  .megamenu-panel{min-height:100%;padding:18px 0 30px}
+  .megamenu-panel{width:100%;max-width:100%;min-height:100%;padding:0 0 30px}
   .megamenu-item{padding:13px 14px;font-size:12.5px}
   .megamenu-item span.ic{width:32px;height:32px;font-size:13px}
 

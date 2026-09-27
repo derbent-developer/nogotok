@@ -61,7 +61,7 @@ function paintChrome(){
   const cats = visibleTop();
   $('#topnav').innerHTML =
     (brandList().length ? `<a href="#/brands">Все бренды</a>` : '') +
-    cats.slice(0,7).map(c => `<a href="#/catalog/${c.slug}">${esc(c.title)}</a>`).join('') +
+    cats.slice(0,6).map(c => `<a href="#/catalog/${c.slug}">${esc(c.title)}</a>`).join('') +
     `<a href="#/catalog?badge=sale" class="accent">Скидки</a><a href="#/delivery">Доставка</a>`;
 
   paintMega();
@@ -88,46 +88,60 @@ function productsOf(slug){
 }
 const countIn = slug => productsOf(slug).length;
 
-/** Меню каталога: верхний уровень, а у разделов с подгруппами — второй экран. */
-function paintMega(level = '', parent = ''){
-  const box = $('#megamenu-grid');
-  const line = (href, icon, title, note, arrow) => `
-    <a class="megamenu-item" href="${href}"${arrow ? ' data-drill="' + arrow + '"' : ''}>
-      <span class="ic">${esc(icon)}</span>
-      <span class="tx">${esc(title)}${note ? `<small>${esc(note)}</small>` : ''}</span>
-      ${arrow ? '<span class="arr">›</span>' : ''}
-    </a>`;
+/**
+ * Дерево каталога: раздел с подгруппами раскрывается стрелкой на месте.
+ * Используется и в боковом меню, и в панели фильтров.
+ */
+function catalogTree(current = ''){
+  const item = (href, title, kids, key, count = 0) => `
+    <li class="${kids ? 'has-kids' : ''} ${current === key ? 'on' : ''}">
+      <div class="ctree-row">
+        <a href="${href}">${esc(title)}${count ? ` <small>${count}</small>` : ''}</a>
+        ${kids ? `<button type="button" class="ctree-toggle" data-tree="${esc(key)}" aria-label="Раскрыть">›</button>` : ''}
+      </div>
+      ${kids ? `<ul class="ctree-sub hidden" data-sub="${esc(key)}">${kids}</ul>` : ''}
+    </li>`;
 
-  if (level === 'brands'){
-    box.innerHTML = `<div class="megamenu-head"><button data-mega-back>‹ Назад</button><b>Все бренды</b></div>` +
-      brandList().map(b => line(`#/brand/${encodeURIComponent(b)}`, '◆', b,
-        `${productsOfBrand(b).length} ${plural(productsOfBrand(b).length,'товар','товара','товаров')}`)).join('');
-    return;
-  }
+  const brands = brandList();
+  const brandsNode = brands.length ? item('#/brands', 'ВСЕ БРЕНДЫ',
+    brands.map(b => `<li><a href="#/brand/${encodeURIComponent(b)}">${esc(b)} <small>${productsOfBrand(b).length}</small></a></li>`).join(''),
+    'brands', brands.length) : '';
 
-  if (level === 'cat'){
-    const cat = catBySlug(parent);
-    box.innerHTML = `<div class="megamenu-head"><button data-mega-back>‹ Назад</button><b>${esc(cat ? cat.title : '')}</b></div>` +
-      line(`#/catalog/${parent}`, '▤', 'Все товары раздела', `${countIn(parent)} ${plural(countIn(parent),'товар','товара','товаров')}`) +
-      visibleChildren(parent).map(c => line(`#/catalog/${c.slug}`, c.icon || '•', c.title,
-        `${countIn(c.slug)} ${plural(countIn(c.slug),'товар','товара','товаров')}`)).join('');
-    return;
-  }
+  const rows = topCategories().map(c => {
+    const kids = childrenOf(c.slug);
+    return item(`#/catalog/${c.slug}`, c.title,
+      kids.length ? kids.map(k =>
+        `<li class="${current === k.slug ? 'on' : ''}"><a href="#/catalog/${k.slug}">${esc(k.title)}${
+          countIn(k.slug) ? ` <small>${countIn(k.slug)}</small>` : ''}</a></li>`).join('') : '',
+      c.slug, countIn(c.slug));
+  }).join('');
 
-  if (!S.products.length){
-    box.innerHTML = `<div class="hint" style="grid-column:1/-1;color:var(--muted);padding:10px 4px">
-      Каталог наполняется, разделы появятся вместе с товарами.</div>`;
-    return;
-  }
-  box.innerHTML =
-    line('#/brands', '◆', 'Все бренды', `${brandList().length} ${plural(brandList().length,'бренд','бренда','брендов')}`, 'brands') +
-    visibleTop().map(c => {
-      const kids = visibleChildren(c.slug).length;
-      return line(`#/catalog/${c.slug}`, c.icon || '✦', c.title,
-        `${countIn(c.slug)} ${plural(countIn(c.slug),'товар','товара','товаров')}`,
-        kids ? 'cat:' + c.slug : '');
-    }).join('');
+  return `<ul class="ctree">${brandsNode}${rows}</ul>`;
 }
+
+/** Раскрытие и сворачивание веток. Работает в любом месте страницы. */
+function bindTree(root = document){
+  $$('.ctree-toggle', root).forEach(btn => btn.onclick = e => {
+    e.preventDefault(); e.stopPropagation();
+    const li = btn.closest('li');
+    const sub = $(`[data-sub="${CSS.escape(btn.dataset.tree)}"]`, li);
+    if (!sub) return;
+    const open = sub.classList.toggle('hidden');
+    li.classList.toggle('open', !open);
+  });
+}
+
+function paintMega(){
+  const box = $('#megamenu-grid');
+  if (!S.products.length){
+    box.innerHTML = `<div class="ctree-empty">Каталог наполняется, разделы появятся вместе с товарами.</div>`;
+    return;
+  }
+  const { parts } = parseHash();
+  box.innerHTML = `<div class="ctree-head">Каталог</div>` + catalogTree(parts[1] || '');
+  bindTree(box);
+}
+
 
 /** Пустые разделы покупателю не показываем. */
 const visibleTop = () => topCategories().filter(c => countIn(c.slug) > 0);
@@ -478,15 +492,10 @@ function renderCatalog(slug, q, brand){
       </div>
 
       ${brand ? '' : `<div class="fgroup">
-        <h4>Категории</h4>
-        <ul>
-          <li><a href="#/catalog" class="${slug?'':'on'}">Все категории <small>${S.products.length}</small></a></li>
-          ${visibleTop().map(c => `
-            <li><a href="#/catalog/${c.slug}" class="${slug===c.slug?'on':''}">${esc(c.title)} <small>${countIn(c.slug)}</small></a></li>
-            ${visibleChildren(c.slug).map(k => `
-              <li class="sub"><a href="#/catalog/${k.slug}" class="${slug===k.slug?'on':''}">${esc(k.title)} <small>${countIn(k.slug)}</small></a></li>`).join('')}
-          `).join('')}
-        </ul>
+        <h4>Каталог</h4>
+        <ul class="ctree flat"><li class="${slug?'':'on'}"><div class="ctree-row">
+          <a href="#/catalog">Все разделы <small>${S.products.length}</small></a></div></li></ul>
+        ${catalogTree(slug)}
       </div>`}
 
       ${highest > lowest ? `<div class="fgroup">
@@ -561,13 +570,14 @@ function renderCatalog(slug, q, brand){
           ? `<div class="grid">${list.map(cardHTML).join('')}</div>`
           : (S.products.length
               ? `<div class="empty"><b>Ничего не нашли</b>Снимите часть фильтров или напишите нам в WhatsApp — привезём под заказ.</div>`
-              : `<div class="empty"><b>Каталог наполняется</b>Товары появятся совсем скоро. Напишите нам в WhatsApp — подскажем по наличию.</div>`)}
+              : `<div class="empty"><b>${slug ? 'Раздел наполняется' : 'Каталог наполняется'}</b>Товары появятся совсем скоро. Напишите нам в WhatsApp — подскажем по наличию и привезём под заказ.</div>`)}
       </section>
     </div>
   </div>`;
 
   /* ---------------------- поведение панели фильтров ---------------------- */
   const panel = $('.filters');
+  bindTree(panel);
   const wide = () => !window.matchMedia('(max-width:900px)').matches;
 
   const pending = {
@@ -1041,8 +1051,7 @@ document.addEventListener('click', e => {
     setQty(id, cartQty(id) - 1);
   }
 
-  const item = e.target.closest('.megamenu-item');
-  if (item && !item.dataset.drill) closeMega();   // пункты с подгруппами меню не закрывают
+  if (e.target.closest('.megamenu-item')) closeMega();
 });
 
 $('#burger').onclick = () => {
@@ -1054,15 +1063,7 @@ $('#burger').onclick = () => {
 };
 $('#megamenu').onclick = e => {
   if (e.target.id === 'megamenu') return closeMega();
-  const back = e.target.closest('[data-mega-back]');
-  if (back){ e.preventDefault(); return paintMega(); }
-  const drill = e.target.closest('[data-drill]');
-  if (drill){
-    e.preventDefault();
-    const [level, parent] = drill.dataset.drill.split(':');
-    paintMega(level, parent || '');
-    $('.megamenu-panel').scrollTop = 0;
-  }
+  if (e.target.closest('.ctree a')) closeMega();   // переход по разделу закрывает меню
 };
 $('#open-cart').onclick = openDrawer;
 $('#close-cart').onclick = closeDrawer;

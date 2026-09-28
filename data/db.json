@@ -1309,15 +1309,6 @@
       "parent": "soputstvuyuschie-tovary"
     },
     {
-      "id": 130,
-      "title": "СУПЕР СЕТ",
-      "slug": "super-set",
-      "icon": "✦",
-      "image": "",
-      "sort": 27,
-      "parent": ""
-    },
-    {
       "id": 131,
       "title": "Подарочные сертификаты",
       "slug": "podarochnye-sertifikaty",

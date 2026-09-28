@@ -184,15 +184,6 @@
       "parent": ""
     },
     {
-      "id": 3,
-      "title": "ПОДАРОЧНЫЕ НАБОРЫ",
-      "slug": "podarochnye-nabory",
-      "icon": "✦",
-      "image": "",
-      "sort": 3,
-      "parent": ""
-    },
-    {
       "id": 4,
       "title": "Базы / Топы",
       "slug": "bazy-topy",

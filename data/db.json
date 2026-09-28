@@ -175,15 +175,6 @@
   },
   "categories": [
     {
-      "id": 1,
-      "title": "Корейская косметика",
-      "slug": "koreyskaya-kosmetika",
-      "icon": "✦",
-      "image": "",
-      "sort": 1,
-      "parent": ""
-    },
-    {
       "id": 2,
       "title": "ЛИКВИДАЦИЯ",
       "slug": "likvidaciya",

@@ -1274,29 +1274,6 @@
       "createdAt": "2026-09-27T12:00:00"
     },
     {
-      "id": 4,
-      "title": "Гель-лак Sphere, 8 мл",
-      "slug": "tovar-4",
-      "brand": "ART-A",
-      "category": "osnovnaya-kollekciya",
-      "price": 430,
-      "oldPrice": 0,
-      "unit": "шт",
-      "sku": "0004",
-      "badge": "",
-      "inStock": true,
-      "published": true,
-      "description": "",
-      "images": [],
-      "attrs": {
-        "Тип товара": "Гель-лак",
-        "Объём": "8 мл",
-        "Цвет": "Серебро",
-        "Страна": "Украина"
-      },
-      "createdAt": "2026-09-27T12:00:00"
-    },
-    {
       "id": 9,
       "title": "Гель моделирующий Clear, 15 мл",
       "slug": "tovar-9",

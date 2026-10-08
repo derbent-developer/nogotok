@@ -2415,29 +2415,6 @@
       "createdAt": "2026-09-27T12:00:00"
     },
     {
-      "id": 55,
-      "title": "Гель-лак Pedicure Collection, 10 мл",
-      "slug": "tovar-55",
-      "brand": "TARTISO",
-      "category": "osnovnaya-kollekciya",
-      "price": 420,
-      "oldPrice": 0,
-      "unit": "шт",
-      "sku": "0055",
-      "badge": "",
-      "inStock": true,
-      "published": true,
-      "description": "",
-      "images": [],
-      "attrs": {
-        "Тип товара": "Гель-лак",
-        "Объём": "10 мл",
-        "Цвет": "Винный",
-        "Страна": "Россия"
-      },
-      "createdAt": "2026-09-27T12:00:00"
-    },
-    {
       "id": 56,
       "title": "Гели моделирующие, 15 мл",
       "slug": "tovar-56",

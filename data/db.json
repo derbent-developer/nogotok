@@ -2347,29 +2347,6 @@
       "createdAt": "2026-09-27T12:00:00"
     },
     {
-      "id": 56,
-      "title": "Гели моделирующие, 15 мл",
-      "slug": "tovar-56",
-      "brand": "TARTISO",
-      "category": "modeliruyuschie-geli",
-      "price": 690,
-      "oldPrice": 812,
-      "unit": "шт",
-      "sku": "0056",
-      "badge": "sale",
-      "inStock": true,
-      "published": true,
-      "description": "",
-      "images": [],
-      "attrs": {
-        "Тип товара": "Гель моделирующий",
-        "Объём": "15 мл",
-        "Цвет": "Прозрачный",
-        "Страна": "Россия"
-      },
-      "createdAt": "2026-09-27T12:00:00"
-    },
-    {
       "id": 57,
       "title": "Гель-лак Lollipop, 8 мл",
       "slug": "tovar-57",

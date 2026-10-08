@@ -1753,29 +1753,6 @@
       "createdAt": "2026-09-27T12:00:00"
     },
     {
-      "id": 25,
-      "title": "База Legend, 15 мл",
-      "slug": "tovar-25",
-      "brand": "LINTO",
-      "category": "bazy-topy",
-      "price": 1200,
-      "oldPrice": 0,
-      "unit": "шт",
-      "sku": "0025",
-      "badge": "hit",
-      "inStock": true,
-      "published": true,
-      "description": "",
-      "images": [],
-      "attrs": {
-        "Тип товара": "База",
-        "Объём": "15 мл",
-        "Цвет": "Прозрачный",
-        "Страна": "Россия"
-      },
-      "createdAt": "2026-09-27T12:00:00"
-    },
-    {
       "id": 27,
       "title": "Гель-лак Basic, 10 мл",
       "slug": "tovar-27",

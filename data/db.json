@@ -1547,29 +1547,6 @@
       "createdAt": "2026-09-27T12:00:00"
     },
     {
-      "id": 16,
-      "title": "Камуфляж для френча, 15 мл",
-      "slug": "tovar-16",
-      "brand": "HUKKO",
-      "category": "bazy-topy",
-      "price": 640,
-      "oldPrice": 0,
-      "unit": "шт",
-      "sku": "0016",
-      "badge": "",
-      "inStock": true,
-      "published": true,
-      "description": "",
-      "images": [],
-      "attrs": {
-        "Тип товара": "Камуфлирующая база",
-        "Объём": "15 мл",
-        "Цвет": "Белый",
-        "Страна": "Корея"
-      },
-      "createdAt": "2026-09-27T12:00:00"
-    },
-    {
       "id": 19,
       "title": "База Rubber Base, 12 мл",
       "slug": "tovar-19",

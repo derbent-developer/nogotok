@@ -1707,29 +1707,6 @@
       "createdAt": "2026-09-27T12:00:00"
     },
     {
-      "id": 23,
-      "title": "Гель-лак Основная коллекция, 7 мл",
-      "slug": "tovar-23",
-      "brand": "LOVELY",
-      "category": "osnovnaya-kollekciya",
-      "price": 360,
-      "oldPrice": 0,
-      "unit": "шт",
-      "sku": "0023",
-      "badge": "",
-      "inStock": false,
-      "published": true,
-      "description": "",
-      "images": [],
-      "attrs": {
-        "Тип товара": "Гель-лак",
-        "Объём": "7 мл",
-        "Цвет": "Розовый",
-        "Страна": "Россия"
-      },
-      "createdAt": "2026-09-27T12:00:00"
-    },
-    {
       "id": 27,
       "title": "Гель-лак Basic, 10 мл",
       "slug": "tovar-27",

@@ -1251,29 +1251,6 @@
       "createdAt": "2026-09-27T12:00:00"
     },
     {
-      "id": 3,
-      "title": "Гель-лак Кошачий глаз, 8 мл",
-      "slug": "tovar-3",
-      "brand": "ART-A",
-      "category": "osnovnaya-kollekciya",
-      "price": 420,
-      "oldPrice": 494,
-      "unit": "шт",
-      "sku": "0003",
-      "badge": "sale",
-      "inStock": true,
-      "published": true,
-      "description": "",
-      "images": [],
-      "attrs": {
-        "Тип товара": "Гель-лак",
-        "Объём": "8 мл",
-        "Цвет": "Изумрудный",
-        "Страна": "Украина"
-      },
-      "createdAt": "2026-09-27T12:00:00"
-    },
-    {
       "id": 9,
       "title": "Гель моделирующий Clear, 15 мл",
       "slug": "tovar-9",

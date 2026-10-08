@@ -2324,29 +2324,6 @@
       "createdAt": "2026-09-27T12:00:00"
     },
     {
-      "id": 50,
-      "title": "Гель-лак Millennium, 8 мл",
-      "slug": "tovar-50",
-      "brand": "NIK NAILS",
-      "category": "osnovnaya-kollekciya",
-      "price": 410,
-      "oldPrice": 0,
-      "unit": "шт",
-      "sku": "0050",
-      "badge": "",
-      "inStock": true,
-      "published": true,
-      "description": "",
-      "images": [],
-      "attrs": {
-        "Тип товара": "Гель-лак",
-        "Объём": "8 мл",
-        "Цвет": "Мятный",
-        "Страна": "Россия"
-      },
-      "createdAt": "2026-09-27T12:00:00"
-    },
-    {
       "id": 57,
       "title": "Гель-лак Lollipop, 8 мл",
       "slug": "tovar-57",

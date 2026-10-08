@@ -1343,29 +1343,6 @@
       "createdAt": "2026-09-27T12:00:00"
     },
     {
-      "id": 7,
-      "title": "Полигель прозрачный, 30 мл",
-      "slug": "tovar-7",
-      "brand": "BSG",
-      "category": "modeliruyuschie-geli",
-      "price": 890,
-      "oldPrice": 0,
-      "unit": "шт",
-      "sku": "0007",
-      "badge": "",
-      "inStock": true,
-      "published": true,
-      "description": "",
-      "images": [],
-      "attrs": {
-        "Тип товара": "Полигель",
-        "Объём": "30 мл",
-        "Цвет": "Прозрачный",
-        "Страна": "Россия"
-      },
-      "createdAt": "2026-09-27T12:00:00"
-    },
-    {
       "id": 8,
       "title": "Гель-краска для росписи, 5 мл",
       "slug": "tovar-8",

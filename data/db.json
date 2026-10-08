@@ -1431,29 +1431,6 @@
       "createdAt": "2026-09-27T12:00:00"
     },
     {
-      "id": 32,
-      "title": "База камуфлирующая Nude, 9 мл",
-      "slug": "tovar-32",
-      "brand": "MILK",
-      "category": "bazy-topy",
-      "price": 540,
-      "oldPrice": 0,
-      "unit": "шт",
-      "sku": "0032",
-      "badge": "",
-      "inStock": true,
-      "published": true,
-      "description": "",
-      "images": [],
-      "attrs": {
-        "Тип товара": "Камуфлирующая база",
-        "Объём": "9 мл",
-        "Цвет": "Нюд",
-        "Страна": "Россия"
-      },
-      "createdAt": "2026-09-27T12:00:00"
-    },
-    {
       "id": 35,
       "title": "Гель-лак термо, 10 мл",
       "slug": "tovar-35",

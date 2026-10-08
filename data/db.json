@@ -2392,29 +2392,6 @@
       "createdAt": "2026-09-27T12:00:00"
     },
     {
-      "id": 53,
-      "title": "Гель-лак Flora blooms, 11 мл",
-      "slug": "tovar-53",
-      "brand": "SEREBRO",
-      "category": "osnovnaya-kollekciya",
-      "price": 470,
-      "oldPrice": 0,
-      "unit": "шт",
-      "sku": "0053",
-      "badge": "",
-      "inStock": true,
-      "published": true,
-      "description": "",
-      "images": [],
-      "attrs": {
-        "Тип товара": "Гель-лак",
-        "Объём": "11 мл",
-        "Цвет": "Малиновый",
-        "Страна": "Россия"
-      },
-      "createdAt": "2026-09-27T12:00:00"
-    },
-    {
       "id": 56,
       "title": "Гели моделирующие, 15 мл",
       "slug": "tovar-56",

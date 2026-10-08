@@ -2117,29 +2117,6 @@
       "createdAt": "2026-09-27T12:00:00"
     },
     {
-      "id": 41,
-      "title": "Гель-лак Cat Prism, 8 мл",
-      "slug": "tovar-41",
-      "brand": "MYSTIQUE",
-      "category": "osnovnaya-kollekciya",
-      "price": 460,
-      "oldPrice": 575,
-      "unit": "шт",
-      "sku": "0041",
-      "badge": "sale",
-      "inStock": true,
-      "published": true,
-      "description": "",
-      "images": [],
-      "attrs": {
-        "Тип товара": "Гель-лак",
-        "Объём": "8 мл",
-        "Цвет": "Синий",
-        "Страна": "Россия"
-      },
-      "createdAt": "2026-09-27T12:00:00"
-    },
-    {
       "id": 43,
       "title": "База каучуковая, 11 мл",
       "slug": "tovar-43",

@@ -1730,29 +1730,6 @@
       "createdAt": "2026-09-27T12:00:00"
     },
     {
-      "id": 24,
-      "title": "База каучуковая, 12 мл",
-      "slug": "tovar-24",
-      "brand": "LOVELY",
-      "category": "bazy-topy",
-      "price": 590,
-      "oldPrice": 0,
-      "unit": "шт",
-      "sku": "0024",
-      "badge": "",
-      "inStock": true,
-      "published": true,
-      "description": "",
-      "images": [],
-      "attrs": {
-        "Тип товара": "База",
-        "Объём": "12 мл",
-        "Цвет": "Прозрачный",
-        "Страна": "Россия"
-      },
-      "createdAt": "2026-09-27T12:00:00"
-    },
-    {
       "id": 27,
       "title": "Гель-лак Basic, 10 мл",
       "slug": "tovar-27",

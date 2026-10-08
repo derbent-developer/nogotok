@@ -2527,29 +2527,6 @@
       "createdAt": "2026-09-27T12:00:00"
     },
     {
-      "id": 59,
-      "title": "Гель-лак Gem, 8 мл",
-      "slug": "tovar-59",
-      "brand": "VELVET/VELVETIME",
-      "category": "osnovnaya-kollekciya",
-      "price": 450,
-      "oldPrice": 0,
-      "unit": "шт",
-      "sku": "0059",
-      "badge": "new",
-      "inStock": true,
-      "published": true,
-      "description": "",
-      "images": [],
-      "attrs": {
-        "Тип товара": "Гель-лак",
-        "Объём": "8 мл",
-        "Цвет": "Изумрудный",
-        "Страна": "Россия"
-      },
-      "createdAt": "2026-09-27T12:00:00"
-    },
-    {
       "id": 61,
       "title": "Кусачки для кутикулы CLASSIC NC-10-6",
       "slug": "tovar-61",

@@ -1959,6 +1959,31 @@
         "assets/uploads/20261008-d2hhvi.jpeg"
       ],
       "attrs": {}
+    },
+    {
+      "id": 77,
+      "createdAt": "2026-10-08T12:53:57",
+      "title": "KLIO Топ BRILLIANT без липкого слоя, 30 мл",
+      "slug": "klio-top-brilliant-bez-lipkogo-sloya-30-ml-77",
+      "brand": "KLIO",
+      "category": "bazy-topy",
+      "sku": "",
+      "price": 1250,
+      "oldPrice": 1100,
+      "unit": "шт",
+      "badge": "sale",
+      "inStock": true,
+      "published": true,
+      "description": "",
+      "images": [
+        "assets/uploads/20261008-ufyp9t.jpeg"
+      ],
+      "attrs": {
+        "Тип товара": "Топ",
+        "Объём": "30 мл",
+        "Цвет": "Прозрачный",
+        "Страна": "Россия"
+      }
     }
   ]
 }

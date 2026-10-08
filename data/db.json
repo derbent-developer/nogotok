@@ -1297,29 +1297,6 @@
       "createdAt": "2026-09-27T12:00:00"
     },
     {
-      "id": 5,
-      "title": "Гель-лак Pastel, 11 мл",
-      "slug": "tovar-5",
-      "brand": "BAGHEERA NAILS",
-      "category": "osnovnaya-kollekciya",
-      "price": 390,
-      "oldPrice": 0,
-      "unit": "шт",
-      "sku": "0005",
-      "badge": "new",
-      "inStock": true,
-      "published": true,
-      "description": "",
-      "images": [],
-      "attrs": {
-        "Тип товара": "Гель-лак",
-        "Объём": "11 мл",
-        "Цвет": "Пудровый",
-        "Страна": "Россия"
-      },
-      "createdAt": "2026-09-27T12:00:00"
-    },
-    {
       "id": 9,
       "title": "Гель моделирующий Clear, 15 мл",
       "slug": "tovar-9",

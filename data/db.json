@@ -2209,29 +2209,6 @@
       "createdAt": "2026-09-27T12:00:00"
     },
     {
-      "id": 45,
-      "title": "Гель-лак карамельные оттенки, 10 мл",
-      "slug": "tovar-45",
-      "brand": "NAIL REPUBLIC",
-      "category": "osnovnaya-kollekciya",
-      "price": 380,
-      "oldPrice": 0,
-      "unit": "шт",
-      "sku": "0045",
-      "badge": "new",
-      "inStock": true,
-      "published": true,
-      "description": "",
-      "images": [],
-      "attrs": {
-        "Тип товара": "Гель-лак",
-        "Объём": "10 мл",
-        "Цвет": "Карамельный",
-        "Страна": "Россия"
-      },
-      "createdAt": "2026-09-27T12:00:00"
-    },
-    {
       "id": 57,
       "title": "Гель-лак Lollipop, 8 мл",
       "slug": "tovar-57",

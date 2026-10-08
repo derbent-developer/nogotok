@@ -2094,29 +2094,6 @@
       "createdAt": "2026-09-27T12:00:00"
     },
     {
-      "id": 40,
-      "title": "База каучуковая, 15 мл",
-      "slug": "tovar-40",
-      "brand": "Mr.Gel",
-      "category": "bazy-topy",
-      "price": 640,
-      "oldPrice": 0,
-      "unit": "шт",
-      "sku": "0040",
-      "badge": "",
-      "inStock": false,
-      "published": true,
-      "description": "",
-      "images": [],
-      "attrs": {
-        "Тип товара": "База",
-        "Объём": "15 мл",
-        "Цвет": "Прозрачный",
-        "Страна": "Россия"
-      },
-      "createdAt": "2026-09-27T12:00:00"
-    },
-    {
       "id": 43,
       "title": "База каучуковая, 11 мл",
       "slug": "tovar-43",

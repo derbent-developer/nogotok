@@ -2301,29 +2301,6 @@
       "createdAt": "2026-09-27T12:00:00"
     },
     {
-      "id": 49,
-      "title": "База Strong, 15 мл",
-      "slug": "tovar-49",
-      "brand": "NIK NAILS",
-      "category": "bazy-topy",
-      "price": 680,
-      "oldPrice": 0,
-      "unit": "шт",
-      "sku": "0049",
-      "badge": "",
-      "inStock": true,
-      "published": true,
-      "description": "",
-      "images": [],
-      "attrs": {
-        "Тип товара": "База",
-        "Объём": "15 мл",
-        "Цвет": "Прозрачный",
-        "Страна": "Россия"
-      },
-      "createdAt": "2026-09-27T12:00:00"
-    },
-    {
       "id": 57,
       "title": "Гель-лак Lollipop, 8 мл",
       "slug": "tovar-57",

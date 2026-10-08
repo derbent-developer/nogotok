@@ -1524,29 +1524,6 @@
       "createdAt": "2026-09-27T12:00:00"
     },
     {
-      "id": 15,
-      "title": "Гель-лак светоотражающий, 8 мл",
-      "slug": "tovar-15",
-      "brand": "HUKKO",
-      "category": "osnovnaya-kollekciya",
-      "price": 450,
-      "oldPrice": 0,
-      "unit": "шт",
-      "sku": "0015",
-      "badge": "new",
-      "inStock": true,
-      "published": true,
-      "description": "",
-      "images": [],
-      "attrs": {
-        "Тип товара": "Гель-лак",
-        "Объём": "8 мл",
-        "Цвет": "Серый",
-        "Страна": "Корея"
-      },
-      "createdAt": "2026-09-27T12:00:00"
-    },
-    {
       "id": 19,
       "title": "База Rubber Base, 12 мл",
       "slug": "tovar-19",

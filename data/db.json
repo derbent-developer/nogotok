@@ -1478,29 +1478,6 @@
       "createdAt": "2026-09-27T12:00:00"
     },
     {
-      "id": 13,
-      "title": "Жидкий акрил, 30 мл",
-      "slug": "tovar-13",
-      "brand": "ENVY",
-      "category": "modeliruyuschie-geli",
-      "price": 940,
-      "oldPrice": 0,
-      "unit": "шт",
-      "sku": "0013",
-      "badge": "",
-      "inStock": true,
-      "published": true,
-      "description": "",
-      "images": [],
-      "attrs": {
-        "Тип товара": "Жидкий акрил",
-        "Объём": "30 мл",
-        "Цвет": "Прозрачный",
-        "Страна": "Россия"
-      },
-      "createdAt": "2026-09-27T12:00:00"
-    },
-    {
       "id": 19,
       "title": "База Rubber Base, 12 мл",
       "slug": "tovar-19",

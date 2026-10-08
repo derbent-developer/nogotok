@@ -2035,6 +2035,29 @@
         "Цвет": "Прозрачный",
         "Страна": "Россия"
       }
+    },
+    {
+      "id": 80,
+      "createdAt": "2026-10-08T14:18:05",
+      "title": "База UNO STRONG (Уно Стронг) каучуковая 30 мл (честный знак)",
+      "slug": "baza-uno-strong-uno-strong-kauchukovaya-30-ml-chestnyy-znak-80",
+      "brand": "UNO",
+      "category": "bazy-topy",
+      "sku": "",
+      "price": 890,
+      "oldPrice": 0,
+      "unit": "шт",
+      "badge": "",
+      "inStock": true,
+      "published": true,
+      "description": "",
+      "images": [],
+      "attrs": {
+        "Тип товара": "База",
+        "Объём": "30 мл",
+        "Цвет": "Прозрачный",
+        "Страна": "Россия"
+      }
     }
   ]
 }

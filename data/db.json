@@ -1433,29 +1433,6 @@
       "createdAt": "2026-09-27T12:00:00"
     },
     {
-      "id": 11,
-      "title": "База камуфлирующая Cover, 15 мл",
-      "slug": "tovar-11",
-      "brand": "CULT NAIL LAB",
-      "category": "bazy-topy",
-      "price": 720,
-      "oldPrice": 0,
-      "unit": "шт",
-      "sku": "0011",
-      "badge": "",
-      "inStock": true,
-      "published": true,
-      "description": "",
-      "images": [],
-      "attrs": {
-        "Тип товара": "Камуфлирующая база",
-        "Объём": "15 мл",
-        "Цвет": "Персиковый",
-        "Страна": "Россия"
-      },
-      "createdAt": "2026-09-27T12:00:00"
-    },
-    {
       "id": 19,
       "title": "База Rubber Base, 12 мл",
       "slug": "tovar-19",

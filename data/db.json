@@ -1593,29 +1593,6 @@
       "createdAt": "2026-09-27T12:00:00"
     },
     {
-      "id": 18,
-      "title": "Гель-лак крем, 8 мл",
-      "slug": "tovar-18",
-      "brand": "IN'GARDEN",
-      "category": "osnovnaya-kollekciya",
-      "price": 380,
-      "oldPrice": 0,
-      "unit": "шт",
-      "sku": "0018",
-      "badge": "",
-      "inStock": true,
-      "published": true,
-      "description": "",
-      "images": [],
-      "attrs": {
-        "Тип товара": "Гель-лак",
-        "Объём": "8 мл",
-        "Цвет": "Красный",
-        "Страна": "Россия"
-      },
-      "createdAt": "2026-09-27T12:00:00"
-    },
-    {
       "id": 19,
       "title": "База Rubber Base, 12 мл",
       "slug": "tovar-19",
